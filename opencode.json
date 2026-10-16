@@ -1,0 +1,44 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "./AGENTS.md"
+  ],
+  "skills": [
+    ".openwork/skills"
+  ],
+    "permission": {
+    "read": {
+      "*": "deny",
+      "~/projects/mem0/*": "allow"
+    },
+    "edit":  {
+      "*": "deny",
+      "~/projects/mem0/*": "allow"
+    },
+    "glob": "allow",
+    "grep": "allow",
+    "bash": {
+      "*": "ask",
+      "docker *": "allow",
+      "docker compose *": "allow",
+      "dig *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git status *": "allow",
+      "grep *": "allow",
+      "ls *": "allow",
+      "pwd": "allow",
+      "whoami": "allow"
+    },
+    "task": "allow",
+    "skill": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "question": "allow",
+    "lsp": "allow",
+    "todowrite": "allow"
+  },
+  "plugin": [
+    "superpowers@git+https://github.com/obra/superpowers.git"
+  ]
+}
