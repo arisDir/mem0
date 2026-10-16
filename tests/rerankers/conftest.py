@@ -41,3 +41,13 @@ def mock_zero_entropy(monkeypatch):
     monkeypatch.setattr(zero_entropy_reranker, "ZeroEntropy", fake_module.ZeroEntropy, raising=False)
     monkeypatch.setattr(zero_entropy_reranker, "ZERO_ENTROPY_AVAILABLE", True, raising=False)
     return zero_entropy_reranker, fake_client
+
+
+@pytest.fixture
+def mock_ollama(monkeypatch):
+    """Patch the ``ollama.Client`` used by OllamaReranker so tests never hit the network."""
+    import mem0.reranker.ollama_reranker as ollama_reranker
+
+    fake_client = MagicMock()
+    monkeypatch.setattr(ollama_reranker, "Client", MagicMock(return_value=fake_client))
+    return ollama_reranker, fake_client
