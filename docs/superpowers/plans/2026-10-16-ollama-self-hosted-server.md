@@ -8,6 +8,15 @@
 
 **Tech Stack:** Python 3.9–3.12, Pydantic v2, `ollama` Python client >= 0.6.3, FastAPI, Docker Compose, pytest + pytest-mock, ruff (line length 120).
 
+## Execution Protocol
+
+**Before executing any task, every task in this plan MUST first be written to a to-do list.** This is mandatory and applies regardless of how the work is carried out.
+
+- The executor (whether one agent or a coordinating orchestrator) must create a to-do list containing all seven tasks with their names and statuses, and keep exactly one task `in_progress` at a time, updating it as tasks complete.
+- In multi-agent execution (e.g. subagent-driven-development), the orchestrator owns the master to-do list covering all tasks; each subagent must additionally create its own to-do list for the specific task(s) it is assigned before starting work.
+- No code, tests, commits, or other task actions may begin until the to-do list for the upcoming task(s) exists.
+- Mark a task completed only after its own tests and lint pass and its commit is made.
+
 ## Global Constraints
 
 - Python must run on 3.9 through 3.12; use no 3.10+-only syntax in `mem0/`.
