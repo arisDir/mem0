@@ -12,66 +12,12 @@ This guide walks you through setting up Mem0's self-hosted server to run exclusi
 ## Prerequisites
 
 - [Ollama](https://ollama.com/download) installed and running on your host
+- Ollama models pulled: `gemma4:e4b32k`, `nomic-embed-text-v2-moe:latest`, `dengcao/Qwen3-Reranker-8B:Q5_K_M`
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) (v2)
 - Python 3.9–3.12 if you want to use the Python SDK locally
 - `git`, `curl`, `openssl` (commonly available)
 
-
-## Ollama-Specific Setup (Recommended for this branch)
-
-Since this branch adds first-class Ollama support (LLM, embedder, and reranker), here's the exact Ollama-focused flow:
-
-### 1) Install and run Ollama
-Download from [ollama.com/download](https://ollama.com/download) and ensure it's running on `http://localhost:11434`.
-
-### 2) Pull required models
-```bash
-ollama pull gemma4:e4b32k
-ollama pull nomic-embed-text-v2-moe:latest
-ollama pull dengcao/Qwen3-Reranker-8B:Q5_K_M
-```
-
-### 3) Configure environment for Ollama
-Copy `.env.example` and create `.env` in `server/`. The example is pre-configured for Ollama in this branch:
-
-```bash
-cd server
-cp .env.example .env
-```
-
-Key values:
-- `OLLAMA_BASE_URL=http://host.docker.internal:11434` (allows container to reach host Ollama)
-- `MEM0_DEFAULT_LLM_MODEL=gemma4:e4b32k`
-- `MEM0_DEFAULT_EMBEDDER_MODEL=nomic-embed-text-v2-moe`
-- `MEM0_DEFAULT_RERANKER_MODEL=dengcao/Qwen3-Reranker-8B:Q5_K_M`
-- `MEM0_DEFAULT_EMBEDDING_DIMS=768`
-
-Generate secrets if needed:
-```bash
-openssl rand -base64 48 | tr -d '
-' > /tmp/jwt && echo; # for JWT_SECRET
-openssl rand -hex 24  # for POSTGRES_PASSWORD
-```
-
-### 4) Start with Ollama defaults
-```bash
-make up
-```
-The server defaults to Ollama for all three components. The dashboard Configuration page will reflect these values.
-
-## 1) Check out the branch
-
-Clone the repo and switch to this branch (or if you already have it):
-
-```bash
-git clone https://github.com/mem0ai/mem0.git
-cd mem0
-git checkout feat/ollama-self-hosted-server
-```
-
-All changes for Ollama self-hosting live in this branch.
-
-## 2) Pull required Ollama models
+## 1) Pull required Ollama models
 
 The server defaults expect these models. Pull them now:
 
@@ -89,7 +35,7 @@ ollama list
 curl -s http://localhost:11434/api/tags | jq '.models[].name'
 ```
 
-## 3) Configure environment
+## 2) Configure environment
 
 Navigate to the server directory:
 
@@ -97,7 +43,7 @@ Navigate to the server directory:
 cd server
 ```
 
-Create `.env` (gitignored). In this branch, `.env.example` is already pre-configured for Ollama. Copy it and fill secrets:
+Create `.env` (gitignored). In this branch, `.env.example` already ships Ollama defaults; either copy it and fill in the secrets below, or write it directly:
 
 ```bash
 # Generate secure secrets
@@ -132,7 +78,7 @@ EOF
 
 See `.env.example` for more context.
 
-## 4) Build and start the stack
+## 3) Build and start the stack
 
 From the `server/` directory:
 
@@ -161,12 +107,12 @@ make health
 # API: 200, Dashboard: 200, Postgres: ok
 ```
 
-## 5) Complete setup and get an API key
+## 4) Complete setup and get an API key
 
 1. Open `http://localhost:3000` and complete the setup wizard (create admin account).
 2. Once logged in, go to **API Keys** and create a key. Copy it.
 
-## 6) Smoke test (CLI/curl)
+## 5) Smoke test (CLI/curl)
 
 Test the API with reranking enabled:
 
@@ -186,7 +132,7 @@ curl -s -X POST http://localhost:8888/search \
 
 You should see results with a `rerank_score`. Values may be `0.5` depending on the model confidence for short inputs — this is expected behavior (fallback), not a regression. The important thing is `rerank` is accepted and scores are returned.
 
-## 7) Use with Python SDK (optional)
+## 6) Use with Python SDK (optional)
 
 The SDK is installed in editable mode in the container, but you can also use it locally from this repo.
 
