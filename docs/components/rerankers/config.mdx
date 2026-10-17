@@ -67,6 +67,17 @@ All rerankers share these common configuration parameters:
 | `llm.config`   | LLM configuration object    | `dict` | Required |
 | `top_n`        | Number of results to return | `int`  | `None`   |
 
+### Ollama
+
+| Parameter | Type | Default | Description |
+| --------- | ---- | ------- | ----------- |
+| `model` | `str` | Required | Ollama yes/no scoring model |
+| `ollama_base_url` | `str` | `None` | Ollama server URL |
+| `temperature` | `float` | `0.0` | Scoring temperature |
+| `max_tokens` | `int` | `8` | Max tokens per document |
+| `top_logprobs` | `int` | `20` | Candidate tokens per position |
+| `system_prompt` | `str` | `None` | Override the default judgement prompt |
+
 ## Environment Variables
 
 You can set API keys using environment variables:

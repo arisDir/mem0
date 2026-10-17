@@ -1,0 +1,73 @@
+---
+title: Ollama Reranker
+description: 'Rerank self-hosted search results with a local Ollama scoring model'
+icon: 'sparkles'
+---
+
+## Overview
+
+The Ollama reranker scores each candidate memory against the query with a local model served by
+[Ollama](https://ollama.com). It targets yes/no scoring models such as `Qwen3-Reranker`, which
+answer a relevance judgement with `yes` or `no`. Mem0 reads the model's output log probabilities
+for those two tokens and turns them into a relevance score.
+
+<Note>
+  Requires the `ollama` Python package **>= 0.6.3** for `logprobs` and `think` support:
+  `pip install "ollama>=0.6.3"`.
+</Note>
+
+## Configuration
+
+```python
+from mem0 import Memory
+
+config = {
+    "reranker": {
+        "provider": "ollama",
+        "config": {
+            "model": "dengcao/Qwen3-Reranker-8B:Q5_K_M",
+            "ollama_base_url": "http://localhost:11434",
+            "top_logprobs": 20,
+        },
+    },
+}
+
+m = Memory.from_config(config)
+
+results = m.search("What foods should I avoid?", filters={"user_id": "alice"}, rerank=True)
+```
+
+### Configuration Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `model` | str | Required | Ollama model name (a yes/no scoring model) |
+| `ollama_base_url` | str | None | Ollama server URL; None uses the client default (`http://localhost:11434`) |
+| `temperature` | float | 0.0 | Sampling temperature for scoring |
+| `max_tokens` | int | 8 | Maximum tokens generated per document |
+| `top_logprobs` | int | 20 | Candidate tokens returned per position; keep high enough to include `yes` and `no` |
+| `system_prompt` | str | None | Override the default yes/no judgement prompt |
+| `top_k` | int | None | Maximum documents returned after reranking |
+
+## Scoring
+
+For each document the reranker sends the query and document to the model, then computes
+
+```
+score = P(yes) / (P(yes) + P(no))
+```
+
+using the log probabilities at the last position that offers a `yes`/`no` choice. A missing
+choice, a model error, or an unreachable Ollama daemon yields a neutral `0.5`, and search falls
+back to vector results if reranking fails entirely.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Reranker Configuration" icon="gear" href="/components/rerankers/config">
+    Shared and provider-specific reranker config options
+  </Card>
+  <Card title="Reranker Search" icon="magnifying-glass" href="/open-source/features/reranker-search">
+    Enable reranking during search
+  </Card>
+</CardGroup>
