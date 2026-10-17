@@ -16,6 +16,49 @@ This guide walks you through setting up Mem0's self-hosted server to run exclusi
 - Python 3.9–3.12 if you want to use the Python SDK locally
 - `git`, `curl`, `openssl` (commonly available)
 
+
+## Ollama-Specific Setup (Recommended for this branch)
+
+Since this branch adds first-class Ollama support (LLM, embedder, and reranker), here's the exact Ollama-focused flow:
+
+### 1) Install and run Ollama
+Download from [ollama.com/download](https://ollama.com/download) and ensure it's running on `http://localhost:11434`.
+
+### 2) Pull required models
+```bash
+ollama pull gemma4:e4b32k
+ollama pull nomic-embed-text-v2-moe:latest
+ollama pull dengcao/Qwen3-Reranker-8B:Q5_K_M
+```
+
+### 3) Configure environment for Ollama
+Copy `.env.example` and create `.env` in `server/`. The example is pre-configured for Ollama in this branch:
+
+```bash
+cd server
+cp .env.example .env
+```
+
+Key values:
+- `OLLAMA_BASE_URL=http://host.docker.internal:11434` (allows container to reach host Ollama)
+- `MEM0_DEFAULT_LLM_MODEL=gemma4:e4b32k`
+- `MEM0_DEFAULT_EMBEDDER_MODEL=nomic-embed-text-v2-moe`
+- `MEM0_DEFAULT_RERANKER_MODEL=dengcao/Qwen3-Reranker-8B:Q5_K_M`
+- `MEM0_DEFAULT_EMBEDDING_DIMS=768`
+
+Generate secrets if needed:
+```bash
+openssl rand -base64 48 | tr -d '
+' > /tmp/jwt && echo; # for JWT_SECRET
+openssl rand -hex 24  # for POSTGRES_PASSWORD
+```
+
+### 4) Start with Ollama defaults
+```bash
+make up
+```
+The server defaults to Ollama for all three components. The dashboard Configuration page will reflect these values.
+
 ## 1) Check out the branch
 
 Clone the repo and switch to this branch (or if you already have it):
@@ -54,7 +97,7 @@ Navigate to the server directory:
 cd server
 ```
 
-Create `.env` (gitignored). The easiest way is to copy `.env.example` and fill secrets, or generate them:
+Create `.env` (gitignored). In this branch, `.env.example` is already pre-configured for Ollama. Copy it and fill secrets:
 
 ```bash
 # Generate secure secrets
