@@ -141,28 +141,42 @@ def _resolve_user_from_api_key(key: str, db: Session) -> User:
     raise HTTPException(status_code=401, detail="Invalid API key.")
 
 
+def _token_scheme_key(request: Request) -> str | None:
+    """Return the key from an `Authorization: Token <key>` header, if present.
+
+    `HTTPBearer` only accepts the `Bearer` scheme, but the hosted-Platform SDKs, CLI, and
+    Vercel provider send `Authorization: Token <api-key>`. Parse that form ourselves so it
+    resolves exactly like `X-API-Key`.
+    """
+    scheme, _, key = request.headers.get("Authorization", "").partition(" ")
+    if scheme.lower() != "token":
+        return None
+    return key.strip() or None
+
+
 async def verify_auth(
     request: Request,
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     x_api_key: str | None = Depends(api_key_header),
 ) -> User | None:
-    """Authenticate via JWT, X-API-Key, or legacy ADMIN_API_KEY. Returns User or None.
+    """Authenticate via JWT, `Authorization: Token <api-key>`, X-API-Key, or legacy ADMIN_API_KEY.
 
-    A short-lived session is opened only on the branches that query the DB, so no
-    pooled connection is held for the lifetime of the (possibly long-running) request.
+    A short-lived session is opened only on the branches that query the DB, so no pooled
+    connection is held for the lifetime of the (possibly long-running) request.
     """
     if credentials is not None:
         _mark_auth_type(request, "bearer")
         with SessionLocal() as db:
             return _resolve_user_from_jwt(credentials.credentials, db)
 
-    if x_api_key is not None:
-        if ADMIN_API_KEY and secrets.compare_digest(x_api_key, ADMIN_API_KEY):
+    effective_key = x_api_key or _token_scheme_key(request)
+    if effective_key is not None:
+        if ADMIN_API_KEY and secrets.compare_digest(effective_key, ADMIN_API_KEY):
             _mark_auth_type(request, "admin_api_key")
             return None
         _mark_auth_type(request, "api_key")
         with SessionLocal() as db:
-            return _resolve_user_from_api_key(x_api_key, db)
+            return _resolve_user_from_api_key(effective_key, db)
 
     if AUTH_DISABLED:
         _mark_auth_type(request, "disabled")
@@ -170,7 +184,7 @@ async def verify_auth(
 
     raise HTTPException(
         status_code=401,
-        detail="Authentication required. Provide a Bearer token or X-API-Key header.",
+        detail="Authentication required. Provide a Bearer token, Token, or X-API-Key header.",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
