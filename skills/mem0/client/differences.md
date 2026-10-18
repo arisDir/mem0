@@ -103,6 +103,29 @@ These methods exist in Python but not TypeScript:
 | `history_db_path` | `historyDbPath` |
 | `custom_instructions` | `customInstructions` |
 
+## Reranker Providers (OSS)
+
+| Provider | Python OSS | TypeScript OSS |
+|----------|:---------:|:--------------:|
+| `cohere` | yes | yes |
+| `sentence_transformer` | yes | yes |
+| `zero_entropy` | yes | yes |
+| `huggingface` | yes | yes |
+| `llm_reranker` | yes | yes |
+| `ollama` | **yes** | **no** |
+
+The `ollama` reranker (`mem0.reranker.ollama_reranker.OllamaReranker`) exists only in the Python OSS
+SDK — the TypeScript `RerankerFactory` does not register it. Config fields: `ollama_base_url`,
+`temperature` (default `0.0`), `max_tokens` (default `8`), `top_logprobs` (default `20`),
+`system_prompt`. See [python.md → Configuration](./python.md#configuration).
+
+## Self-Hosted Server (REST)
+
+`MemoryClient(host=...)` (Python) and `new MemoryClient({ host })` (TypeScript) point at the
+**Platform** API only. The self-hosted OSS REST server in `server/` uses unversioned paths and an
+`X-API-Key` header, and is not reachable through either `MemoryClient` — see
+[../references/self-hosted-server.md](../references/self-hosted-server.md).
+
 ## OSS Scope Parameter Naming
 
 | Python | TypeScript |

@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: mem0ai
-  version: "0.2.0"
+  version: "0.3.0"
   category: ai-memory
   tags: "migration, oss, self-hosted, platform, hosted"
   mem0_tested_versions: "mem0ai (PyPI) >=2.0.0,<3.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
@@ -62,6 +62,11 @@ Do not assume the layout. Find every place mem0 appears. Detect the language and
 version first, then sweep for usage. Concretely, search for:
 - **Imports / instantiation:** `from mem0 import Memory`, `AsyncMemory`, `Memory.from_config`,
   `Memory(`, `import ... from "mem0ai"`, `from "mem0ai/oss"`, `new Memory(`.
+- **Self-hosted OSS *server* (REST, no SDK):** no `mem0` import at all — look for calls to
+  `/memories`, `/search`, or `/v1/memories/`|`/v3/memories/` with an `X-API-Key` or
+  `Authorization: Token` header and a `MEM0_API_URL`/`base_url` env var. That data lives in the
+  server's Postgres (`pgvector`), not Qdrant — see gotcha #1 and `skills/mem0` →
+  `references/self-hosted-server.md`.
 - **Config blocks:** keys like `vector_store`/`vectorStore`, `embedder`, `llm`, `reranker`,
   `graph_store`/`graphStore`, `history_db_path`/`historyDbPath`, `historyStore`,
   `custom_instructions`/`customInstructions`, `custom_fact_extraction_prompt`/`customPrompt`,

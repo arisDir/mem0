@@ -1,6 +1,6 @@
 # Mem0 Skill for Claude
 
-Add persistent memory to any AI application in minutes using [Mem0 Platform](https://app.mem0.ai?utm_source=oss&utm_medium=skill-mem0-readme) or the open-source self-hosted SDK.
+Add persistent memory to any AI application in minutes using [Mem0 Platform](https://app.mem0.ai?utm_source=oss&utm_medium=skill-mem0-readme), the open-source self-hosted SDK, or the self-hosted OSS REST server.
 
 > **Part of the Mem0 Skill Graph:** See also [mem0-cli](../mem0-cli/SKILL.md) (terminal) and [mem0-vercel-ai-sdk](../mem0-vercel-ai-sdk/SKILL.md) (Vercel AI SDK).
 
@@ -8,7 +8,7 @@ Add persistent memory to any AI application in minutes using [Mem0 Platform](htt
 
 When installed, Claude can:
 
-- **Set up Mem0** in your Python or TypeScript project (Platform or OSS)
+- **Set up Mem0** in your Python or TypeScript project (Platform, OSS, or the self-hosted server)
 - **Integrate memory** into your existing AI app (LangChain, CrewAI, OpenAI Agents, LangGraph, LlamaIndex, etc.)
 - **Generate working code** using real API references and tested patterns
 - **Search live docs** on demand for the latest Mem0 documentation
@@ -46,6 +46,10 @@ curl -X POST https://api.anthropic.com/v1/skills \
   export MEM0_API_KEY="m0-your-api-key"
   ```
 
+> **Using the self-hosted OSS server (`server/`)?** It is a different API: unversioned paths with an
+> `X-API-Key` header (`m0sk_...`), not `MEM0_API_KEY` + `MemoryClient`. See
+> [`references/self-hosted-server.md`](./references/self-hosted-server.md).
+
 ## Quick Start
 
 After installing, just ask Claude:
@@ -73,6 +77,7 @@ skills/mem0/
     ├── quickstart.md           # Full quickstart (Python, TS, cURL)
     ├── sdk-guide.md            # All SDK methods (Python + TypeScript)
     ├── api-reference.md        # REST endpoints, filters, memory object
+    ├── self-hosted-server.md   # Self-hosted OSS REST server (setup, auth, endpoints, examples)
     ├── architecture.md         # Processing pipeline, lifecycle, scoping, performance
     ├── features.md             # Retrieval, graph, categories, MCP, webhooks, multimodal
     ├── integration-patterns.md # LangChain, CrewAI, OpenAI Agents, LangGraph, LlamaIndex, etc.

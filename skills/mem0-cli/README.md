@@ -56,6 +56,11 @@ curl -X POST https://api.anthropic.com/v1/skills \
 
   Or run `mem0 init` for the interactive setup wizard.
 
+> **The CLI is Platform-only.** It speaks the hosted Platform API (`/v1`/`/v3` paths,
+> `Authorization: Token`) and validates the key against `/v1/ping/`, so it does **not** work against
+> the self-hosted OSS REST server in `server/` (unversioned paths, `X-API-Key`). For a self-hosted
+> server, call the REST API directly — see [`mem0` → `references/self-hosted-server.md`](../mem0/references/self-hosted-server.md).
+
 ## Quick Start
 
 After installing, just ask Claude:

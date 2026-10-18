@@ -10,7 +10,7 @@ Installed once, loaded into context so the assistant writes correct Mem0 code. U
 
 | Skill | Surface | Install |
 |-------|---------|---------|
-| [`mem0`](./mem0/) | Python + TypeScript SDKs (Platform + OSS), framework integrations | `npx skills add https://github.com/mem0ai/mem0 --skill mem0` |
+| [`mem0`](./mem0/) | Python + TypeScript SDKs (Platform + OSS), the self-hosted OSS REST server, framework integrations | `npx skills add https://github.com/mem0ai/mem0 --skill mem0` |
 | [`mem0-cli`](./mem0-cli/) | Terminal workflows (`mem0` CLI, both Node and Python) | `npx skills add https://github.com/mem0ai/mem0 --skill mem0-cli` |
 | [`mem0-vercel-ai-sdk`](./mem0-vercel-ai-sdk/) | `@mem0/vercel-ai-provider` and `createMem0` | `npx skills add https://github.com/mem0ai/mem0 --skill mem0-vercel-ai-sdk` |
 
@@ -34,6 +34,7 @@ The `mem0-integrate` and `mem0-test-integration` skills are designed to run in s
 ## Choosing a Skill
 
 - **Writing Mem0 code in a new or existing project?** → `mem0`
+- **Running the self-hosted OSS server (`server/`, REST API)?** → `mem0` (see [`references/self-hosted-server.md`](./mem0/references/self-hosted-server.md))
 - **Using the terminal CLI?** → `mem0-cli`
 - **Building with `@ai-sdk/*`?** → `mem0-vercel-ai-sdk`
 - **Want the assistant to wire Mem0 into an existing repo for you?** → `mem0-integrate`, then `mem0-test-integration`

@@ -13,7 +13,7 @@ Wire [Mem0](https://mem0.ai) into an existing repository end-to-end, using a goa
 When invoked, your assistant will:
 
 - **Detect** the target repo's language and stack automatically
-- **Ask** whether to integrate with Mem0 Platform (managed) or Mem0 Open Source (self-hosted)
+- **Ask** whether to integrate with Mem0 Platform (managed), Mem0 Open Source (in-process), or the self-hosted OSS REST server
 - **Write failing tests first** — no implementation until tests exist
 - **Keep the integration additive and feature-flagged** — existing behavior stays byte-for-byte identical when the flag is unset
 - **Produce a local feature branch** (`mem0-integrate/...`) and a `.mem0-integration/` directory of artifacts (`goal.md`, `plan.md`, `product.json`) consumed by the companion verification skill
@@ -60,7 +60,7 @@ curl -X POST https://api.anthropic.com/v1/skills \
 
 ### Prerequisites
 
-- A Mem0 Platform API key ([get one](https://app.mem0.ai/dashboard/api-keys)) *or* a working OSS setup (LLM + vector store)
+- A Mem0 Platform API key ([get one](https://app.mem0.ai/dashboard/api-keys)) *or* a working OSS setup (LLM + vector store) *or* a running self-hosted OSS server (base URL + `X-API-Key`)
 - Python 3.10+ or Node.js 18+ in the target repo
 - A clean working tree on the target repo's default branch
 

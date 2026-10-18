@@ -4,10 +4,12 @@ description: >
   Mem0 Platform SDK for adding persistent memory to AI applications.
   TRIGGER when: user mentions "mem0", "MemoryClient", "memory layer",
   "remember user preferences", "persistent context", "personalization",
+  "self-hosted mem0 server", "OSS REST API",
   or needs to add long-term memory to chatbots, agents, or AI apps.
   Covers Python SDK (mem0ai), TypeScript SDK (mem0ai), and framework integrations
   (LangChain, CrewAI, OpenAI Agents SDK, Pipecat, LlamaIndex, AutoGen, LangGraph).
-  Also covers the open-source self-hosted Memory class.
+  Also covers the open-source self-hosted Memory class and the self-hosted OSS REST
+  server (Docker Compose, X-API-Key, unversioned endpoints).
   This is the DEFAULT mem0 skill for ambiguous queries.
   DO NOT TRIGGER when: user asks about CLI commands, terminal usage, or shell
   scripts (use mem0-cli), or Vercel AI SDK / @mem0/vercel-ai-provider / createMem0
@@ -15,7 +17,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: mem0ai
-  version: "3.1.0"
+  version: "3.2.0"
   category: ai-memory
   tags: "memory, personalization, ai, python, typescript, vector-search"
   mem0_tested_versions: "mem0ai (PyPI) >=2.0.0,<3.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
@@ -29,7 +31,7 @@ compatibility: Requires Python 3.10+ or Node.js 18+, pip install mem0ai or npm i
 > - **[mem0-cli](../mem0-cli/SKILL.md)** ([GitHub](https://github.com/mem0ai/mem0/tree/main/skills/mem0-cli)) -- Command-line interface
 > - **[mem0-vercel-ai-sdk](../mem0-vercel-ai-sdk/SKILL.md)** ([GitHub](https://github.com/mem0ai/mem0/tree/main/skills/mem0-vercel-ai-sdk)) -- Vercel AI SDK provider
 
-Mem0 is a managed memory layer for AI applications. It stores, retrieves, and manages user memories via API — no infrastructure to deploy. For self-hosted usage, see the OSS section in the client references below.
+Mem0 is a managed memory layer for AI applications. It stores, retrieves, and manages user memories via API — no infrastructure to deploy. For self-hosted usage, see the OSS sections in the client references below, or [references/self-hosted-server.md](references/self-hosted-server.md) if you run the OSS REST server (`server/`).
 
 ## Step 1: Install and authenticate
 
@@ -139,6 +141,7 @@ def chat(user_input: str, user_id: str) -> str:
 - **AND filter with user_id + agent_id returns empty:** Entities are stored separately. Use `OR` instead, or query separately.
 - **Duplicate memories:** Don't mix `infer=True` (default) and `infer=False` for the same data. Stick to one mode.
 - **Wrong import:** For the hosted Platform use `from mem0 import MemoryClient` (or `AsyncMemoryClient` for async). `from mem0 import Memory` is the self-hosted OSS class and does not use `MEM0_API_KEY`.
+- **Self-hosted REST server:** the OSS server shipped in `server/` does **not** speak the Platform API. It uses unversioned paths (`POST /memories`, `POST /search`) and `X-API-Key: m0sk_...` — not `MemoryClient`, not `/v1`/`/v3`, not `Authorization: Token`. Pointing `MemoryClient(host="http://localhost:8888")` at it returns `401`/`404`. See [references/self-hosted-server.md](references/self-hosted-server.md).
 - **v3 defaults (Platform):** `top_k=10`, `rerank=False`. `threshold` is a server-side cutoff applied before score blending, not a floor on the returned `score` (the default and `0.0` return the same or nearly the same results). The client sends none of these unless you pass them. The OSS `Memory.search()` default is `top_k=20`. Adjust as needed for your use case.
 
 ## v2 Compatibility
@@ -172,12 +175,13 @@ Language-specific deep references (Platform + OSS):
 | TypeScript/Node.js (MemoryClient + Memory OSS) | [client/node.md](client/node.md) |
 | Python vs TypeScript differences | [client/differences.md](client/differences.md) |
 
-## Platform References
+## Platform & Self-Hosted References
 
 Load these on demand for deeper detail:
 
 | Topic | File |
 |-------|------|
+| Self-hosted OSS REST server (endpoints, auth, examples) | [references/self-hosted-server.md](references/self-hosted-server.md) |
 | Quickstart (Python, TS, cURL) | [references/quickstart.md](references/quickstart.md) |
 | SDK guide (all methods, both languages) | [references/sdk-guide.md](references/sdk-guide.md) |
 | API reference (endpoints, filters, object schema) | [references/api-reference.md](references/api-reference.md) |

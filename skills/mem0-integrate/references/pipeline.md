@@ -92,6 +92,10 @@ apply the heuristics below. Ask, but never blank.
   `openai`, `@upstash/*`, `posthog-*`), 3 or more, recommend **Platform**.
 - Local-infra signals (`docker-compose.yml` with postgres / redis / qdrant /
   neo4j, ollama configs, self-hosted auth), 2 or more, recommend **OSS**.
+- Repo runs the Mem0 **OSS server** itself (a `server/` directory from the mem0
+  repo, a `mem0/mem0-api-server` container, or code already calling `/memories`
+  with an `X-API-Key`), recommend **OSS server** — integrate against the REST
+  API, not the SDK.
 - No strong signal, default recommendation **Platform**: lower integration
   cost, and migration later is supported.
 
@@ -109,6 +113,7 @@ Bake the choice into the goal doc in step 5. Do not re-decide later.
 |---|---|---|
 | Platform | `MEM0_API_KEY` | https://app.mem0.ai |
 | OSS (default LLM) | `OPENAI_API_KEY` | https://platform.openai.com/api-keys |
+| OSS server | an `X-API-Key` (`m0sk_...`) + base URL (`http://localhost:8888`) | `make bootstrap` output, or the dashboard at `http://localhost:3000` |
 
 Present in env, continue.
 
@@ -132,6 +137,10 @@ user consent, and append `.env` to `.gitignore` if it is not there already.
 If the user is on OSS and wants a non-OpenAI LLM, route them to the
 `components/llms/*` docs and re-run this step with the chosen provider's key.
 
+If the user is on **OSS server**, there is no SDK key — integrate against the
+unversioned REST API with `X-API-Key` and delegate to `skills/mem0` →
+`references/self-hosted-server.md`.
+
 ## 5. Goal doc, the hard gate
 
 Write `.mem0-integration/goal.md` and **require user approval before step 6**.
@@ -147,7 +156,7 @@ Write `.mem0-integration/goal.md` and **require user approval before step 6**.
     **Why:** <one sentence, the user-visible behavior change. "Assistant
     remembers previous orders across sessions," not "we added memory.">
 
-    **Product:** Platform | OSS  (locked from step 3, do not change)
+    **Product:** Platform | OSS | OSS server  (locked from step 3, do not change)
 
     **Delegated skill:** <raw URL of the published skill being used
     from the delegation table in SKILL.md, or "none, custom integration

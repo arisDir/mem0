@@ -1,6 +1,6 @@
 # Mem0 Python SDK Reference
 
-Complete reference for the `mem0ai` Python package. Covers both the Platform client (managed API) and the Open Source self-hosted variant.
+Complete reference for the `mem0ai` Python package. Covers the Platform client (managed API), the Open Source in-process `Memory` class, and the self-hosted OSS REST server.
 
 ---
 
@@ -22,6 +22,8 @@ client = MemoryClient(api_key="m0-xxx")
 ```
 
 **Constructor:** `MemoryClient(api_key=None, host=None, client=None)`. If `api_key` is not provided, reads from `MEM0_API_KEY` environment variable. Raises `ValueError` if no key found. `host` overrides the base URL and `client` accepts a custom `httpx.Client`. `MEM0_SOURCE`, `MEM0_APPLICATION` and `MEM0_CLIENT_STACK` set the request identity headers for wrappers.
+
+> **`host` targets Platform-compatible endpoints only.** It swaps the base URL but keeps the Platform API shape (`Authorization: Token <key>`, `/v1`/`/v3` paths). The OSS REST server in `server/` is **not** Platform-compatible — `MemoryClient(host="http://localhost:8888")` returns `401`/`404` against it. For a self-hosted server use `X-API-Key` + unversioned paths ([../references/self-hosted-server.md](../references/self-hosted-server.md)).
 
 - HTTP library: `httpx`
 - Timeout: 300 seconds
@@ -366,6 +368,30 @@ m = Memory()  # Defaults: OpenAI gpt-5-mini + text-embedding-3-small, local Qdra
 
 **Import:** `from mem0 import Memory` (NOT `MemoryClient` -- that is the Platform client)
 
+### Self-hosted REST server (Docker)
+
+The `server/` directory runs the OSS server on `http://localhost:8888` with a dashboard on `:3000`. It exposes an **unversioned** REST API authenticated with `X-API-Key: m0sk_...`. The Platform `MemoryClient` does **not** work against it.
+
+```python
+import requests
+
+BASE, KEY = "http://localhost:8888", "m0sk_..."
+h = {"X-API-Key": KEY, "Content-Type": "application/json"}
+
+requests.post(f"{BASE}/memories", headers=h, json={
+    "messages": [{"role": "user", "content": "I am allergic to peanuts"}],
+    "user_id": "alice",
+}).json()
+# -> {"results": [{"id": ..., "memory": ..., "event": "ADD"}]}   (synchronous)
+
+requests.post(f"{BASE}/search", headers=h, json={
+    "query": "what should I avoid eating?", "filters": {"user_id": "alice"}, "rerank": True,
+}).json()
+# -> {"results": [{..., "score": 0.23, "rerank_score": 0.5}]}
+```
+
+The in-process `Memory` class above can point at the **same** Postgres/pgvector the server uses, so both read and write the same memories. Full endpoint and auth reference: [../references/self-hosted-server.md](../references/self-hosted-server.md).
+
 ### Configuration
 
 ```python
@@ -394,10 +420,20 @@ config = {
     },
     "history_db_path": "history.db",              # SQLite path for change history (default ~/.mem0/history.db)
     "custom_instructions": "...",                  # Custom LLM prompt for extraction
+    "reranker": {                                  # Optional: used by search(rerank=True)
+        "provider": "ollama",                      # cohere, sentence_transformer, zero_entropy, llm_reranker, huggingface, ollama
+        "config": {
+            "model": "dengcao/Qwen3-Reranker-8B:Q5_K_M",
+            "ollama_base_url": "http://localhost:11434",
+            "top_logprobs": 20,
+        },
+    },
 }
 
 m = Memory.from_config(config)
 ```
+
+`reranker` is optional and only runs when `search(..., rerank=True)` is called (it is a no-op otherwise). The `ollama` provider scores a yes/no relevance judgement from the model's output log probabilities, so it targets reranker-tuned models (e.g. Qwen3-Reranker) served by Ollama. Its config fields are `ollama_base_url`, `temperature` (default `0.0`), `max_tokens` (default `8`), `top_logprobs` (default `20`), and `system_prompt`. `ollama` is a **Python-only** provider — the TypeScript OSS SDK does not ship it.
 
 ### Context Manager
 
@@ -484,6 +520,8 @@ results = await m.search("query", filters={"user_id": "alice"})
 | **Custom prompts** | Via project settings | Direct config (`custom_instructions`) |
 | **History** | Platform-managed | SQLite (configurable) |
 | **Async** | `AsyncMemoryClient` | `AsyncMemory` |
+
+There is a **third** target: the self-hosted OSS REST server (`server/`). It is not an SDK client — call it over HTTP with `X-API-Key` and unversioned paths. See [../references/self-hosted-server.md](../references/self-hosted-server.md).
 
 ---
 

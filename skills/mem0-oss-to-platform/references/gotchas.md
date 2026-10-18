@@ -22,6 +22,11 @@ do, treat it as a separate, opt-in task:
   only), and its export is written for the Python OSS SDK, so TS-written data is not documented as
   supported. The fallback is to read everything from the OSS store (`get_all` per entity) and re-`add`
   it with `infer=False`.
+- **Self-hosted OSS server (the `server/` REST API):** also not covered by the script — it reads a
+  hosted Qdrant collection, while the server stores memories in **Postgres via the `pgvector`**
+  provider. Page the server's REST API instead (`GET /memories?user_id=...`, unversioned paths with
+  an `X-API-Key`) and re-`add` each memory to the Platform with `infer=False`. See `skills/mem0` →
+  `references/self-hosted-server.md`.
 
 ## 2. Self-hosting / data residency
 A local or self-hosted vector store sometimes exists *on purpose* — compliance, data residency, air-

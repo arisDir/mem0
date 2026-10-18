@@ -47,6 +47,10 @@ curl -X POST https://api.anthropic.com/v1/skills \
   export OPENAI_API_KEY="sk-xxx"  # or your chosen provider's key
   ```
 
+> **`host` must be Platform-compatible.** The provider calls the Platform API (`/v3/memories/*`,
+> `Authorization: Token`), so it does **not** work against the self-hosted OSS REST server in
+> `server/` (unversioned paths, `X-API-Key`) — see [`mem0` → `references/self-hosted-server.md`](../mem0/references/self-hosted-server.md).
+
 ## Quick Start
 
 After installing, just ask Claude:

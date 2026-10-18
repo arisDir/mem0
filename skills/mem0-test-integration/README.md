@@ -15,7 +15,7 @@ When invoked, your assistant will:
 - **Refuse to start** unless the branch has `.mem0-integration/` artifacts, the working tree is clean, and the right API key is in the environment
 - **Install** the repo's dependencies using its native tooling (pip, pnpm, npm, hatch, etc.)
 - **Run the native test suite** in two passes: flag-unset (must behave like `main`) and flag-set (new tests run)
-- **Execute a real end-to-end smoke flow** against Mem0 Platform (`MEM0_API_KEY`) or OSS (`OPENAI_API_KEY`)
+- **Execute a real end-to-end smoke flow** against Mem0 Platform (`MEM0_API_KEY`), OSS (`OPENAI_API_KEY`), or a self-hosted OSS server (base URL + `X-API-Key`)
 - **Produce a scorecard** — `overall: pass | fail`, per-check reasons, and the reproduction command for each failure
 
 ## When to Use
