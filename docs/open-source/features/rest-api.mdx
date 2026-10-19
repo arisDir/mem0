@@ -326,7 +326,7 @@ Authenticate with the same `m0sk_...` key, sent as `Authorization: Token <key>` 
 | Method | Path | Delegates to |
 |--------|------|--------------|
 | `GET` | `/v1/ping/` | Auth check; returns user/org info for the key |
-| `POST` | `/v3/memories/add/` | `POST /memories` (async only) |
+| `POST` | `/v3/memories/add/` | `POST /memories` (synchronous) |
 | `POST` | `/v3/memories/search/` | `POST /search`; translates platform filter expressions |
 | `POST` | `/v3/memories/` | `GET /memories`; wraps results in `{"results": [...]}` |
 | `GET` | `/v1/memories/{id}/` | `GET /memories/{id}` |
@@ -340,7 +340,7 @@ Authenticate with the same `m0sk_...` key, sent as `Authorization: Token <key>` 
 Platform-only endpoints that have no OSS equivalent (`/v1/summary/`, `/v1/batch/`, `/v1/exports/`, `/v1/feedback/`, `/v1/events/`, profiles, orgs) return `501 Not Implemented` with a message naming the unsupported surface.
 
 <Note>
-  **Compat limits:** The OSS server is single-tenant — `app_id` and `project_id` are accepted but ignored, and all memories live in one store. `add` is asynchronous (inference runs in the background), so a memory may not be searchable immediately after the call returns. Webhooks, orgs, and user profiles are not supported.
+  **Compat limits:** The OSS server is single-tenant — `app_id` and `project_id` are accepted but ignored, and all memories live in one store. `add` is synchronous: inference (fact extraction, embeddings) runs before the response returns, so a newly added memory is immediately searchable, but the call can take many seconds depending on your model. Webhooks, orgs, and user profiles are not supported.
 </Note>
 
 ---
