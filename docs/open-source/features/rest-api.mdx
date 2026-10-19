@@ -18,7 +18,7 @@ The Mem0 REST API server exposes every OSS memory operation over HTTP. Run it al
 </Warning>
 
 <Warning>
-  **OSS vs Platform API paths:** The self-hosted OSS server does **not** use the `/v1/` prefix. For example, the endpoint is `POST /memories`, not `POST /v1/memories/`. The [API Reference](/api-reference) documents the hosted platform at `api.mem0.ai` which uses `/v1/` paths: those do not apply to the OSS server.
+  **Two API surfaces:** The OSS server's native surface is flat — `POST /memories`, not `POST /v1/memories/`. It also exposes a **platform-compatibility layer** (see below) that accepts the `/v1/`, `/v2/`, and `/v3/` paths used by `MemoryClient`, the `mem0` CLI, and the Vercel AI SDK provider. The [API Reference](/api-reference) documents the hosted platform at `api.mem0.ai`: those semantics (multi-tenant `app_id`, synchronous `add`, exports, events) only partially apply to the OSS server.
 </Warning>
 
 <Warning>
@@ -132,6 +132,7 @@ Auth is on by default. Protected endpoints require either a JWT (from the dashbo
 |---|---|---|
 | Bearer JWT | `Authorization: Bearer <access_token>` | Dashboard sessions; tokens come from `POST /auth/login` and refresh via `POST /auth/refresh` |
 | Per-user API key | `X-API-Key: m0sk_...` | Programmatic access scoped to a single dashboard user |
+| Per-user API key (platform clients) | `Authorization: Token m0sk_...` | Same key, sent the way `MemoryClient` and the `mem0` CLI send it; used by the platform-compat routes below |
 | Legacy `ADMIN_API_KEY` | `X-API-Key: <env value>` | Back-compat for deployments that set the `ADMIN_API_KEY` env var |
 | `AUTH_DISABLED=true` | N/A | Local development only; bypasses auth entirely |
 
@@ -254,7 +255,7 @@ Each returned memory includes `score_details` only when explanation mode is enab
 
 ## Endpoint reference
 
-The OSS REST server exposes the following endpoints. None use the `/v1/` prefix.
+The OSS REST server exposes the following native endpoints. None use the `/v1/` prefix (the platform-style paths are documented separately under [Platform compatibility layer](#platform-compatibility-layer)).
 
 ### Memory operations
 
@@ -309,6 +310,38 @@ All `/api-keys` endpoints require a JWT.
 | `DELETE` | `/entities/{entity_type}/{entity_id}` | Cascade-delete all memories for an entity; `entity_type` is `user`, `agent`, or `run` |
 
 The `/auth/*`, `/api-keys`, `/requests`, and `/entities` routes are new to the self-hosted server and primarily back the dashboard, but you can call them directly from your own tooling.
+
+### Platform compatibility layer
+
+The server also serves a subset of the hosted platform's `/v1/`, `/v2/`, and `/v3/` paths so unmodified platform clients can point at a self-hosted instance:
+
+```python
+from mem0 import MemoryClient
+
+client = MemoryClient(host="http://localhost:8888", api_key="m0sk_...")
+```
+
+Authenticate with the same `m0sk_...` key, sent as `Authorization: Token <key>` (the form platform clients use) or `X-API-Key: <key>`.
+
+| Method | Path | Delegates to |
+|--------|------|--------------|
+| `GET` | `/v1/ping/` | Auth check; returns user/org info for the key |
+| `POST` | `/v3/memories/add/` | `POST /memories` (async only) |
+| `POST` | `/v3/memories/search/` | `POST /search`; translates platform filter expressions |
+| `POST` | `/v3/memories/` | `GET /memories`; wraps results in `{"results": [...]}` |
+| `GET` | `/v1/memories/{id}/` | `GET /memories/{id}` |
+| `PUT` | `/v1/memories/{id}/` | `PUT /memories/{id}` |
+| `DELETE` | `/v1/memories/{id}/` | `DELETE /memories/{id}` |
+| `DELETE` | `/v1/memories/` | `DELETE /memories` (admin) |
+| `GET` | `/v1/memories/{id}/history/` | `GET /memories/{id}/history` |
+| `GET` | `/v1/entities/` | `GET /entities`; wraps in `{"results": [...]}` |
+| `DELETE` | `/v2/entities/{type}/{id}/` | `DELETE /entities/{type}/{id}` |
+
+Platform-only endpoints that have no OSS equivalent (`/v1/summary/`, `/v1/batch/`, `/v1/exports/`, `/v1/feedback/`, `/v1/events/`, profiles, orgs) return `501 Not Implemented` with a message naming the unsupported surface.
+
+<Note>
+  **Compat limits:** The OSS server is single-tenant — `app_id` and `project_id` are accepted but ignored, and all memories live in one store. `add` is asynchronous (inference runs in the background), so a memory may not be searchable immediately after the call returns. Webhooks, orgs, and user profiles are not supported.
+</Note>
 
 ---
 
