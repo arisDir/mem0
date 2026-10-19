@@ -34,6 +34,7 @@ from server_state import (
     set_session_factory,
     update_config,
 )
+from memplatform.routes import router as platform_router
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy import func, select
@@ -181,6 +182,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from memplatform.routes import router as platform_router
+
+app.include_router(platform_router)
 app.include_router(auth_router.router)
 app.include_router(api_keys_router.router)
 app.include_router(entities_router.router)

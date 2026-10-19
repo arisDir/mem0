@@ -1,2 +1,3 @@
-# Placeholder for compat routes; populated in Task 3/4.
-pass
+from .routes import router
+
+__all__ = ["router"]
