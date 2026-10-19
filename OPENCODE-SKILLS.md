@@ -41,79 +41,40 @@ OpenCode searches for a directory that contains either root-level `*.md` skills 
 
 Point a source at the **parent** directory that contains the skill folders — not at a single skill folder. A bare `SKILL.md` at the root of a source gets the literal ID `SKILL`, so a source of `skills/mem0` would produce `SKILL`, while a source of `skills/` produces `mem0`.
 
-> This repo's `/home/aris/projects/mem0/opencode.json` already declares `"skills": [".openwork/skills"]`, but `.openwork/skills/` does not exist yet. That is the repo-local install target (Option B).
-
 ## 4. Option A — Global install (recommended)
 
-Symlink the skill folders into the global source so they are available in every project and always reflect your edits to `skills/`:
+Copy the skill folders into the global source so they are available in every project:
 
 ```bash
 mkdir -p ~/.config/opencode/skills
+# Delete only the mem0 skills (pattern), leaving any other skills in place.
+rm -rf "$HOME/.config/opencode/skills/"mem0*
 for s in mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform; do
-  ln -sfn "/home/aris/projects/mem0/skills/$s" "$HOME/.config/opencode/skills/$s"
+  cp -R "/home/aris/projects/mem0/skills/$s" "$HOME/.config/opencode/skills/$s"
 done
 ls -l ~/.config/opencode/skills
 ```
 
-Symlinks mean there is nothing to re-copy when you edit a skill file.
+Because these are copies, re-run this command after editing the skills to pick up the changes.
 
-## 5. Option B — Repo-local install
-
-Use this if you only want the skills while working inside the mem0 repo. It satisfies the `"skills": [".openwork/skills"]` entry already present in `opencode.json`:
-
-```bash
-mkdir -p /home/aris/projects/mem0/.openwork/skills
-for s in mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform; do
-  ln -sfn "/home/aris/projects/mem0/skills/$s" "/home/aris/projects/mem0/.openwork/skills/$s"
-done
-```
-
-The `skills` path is resolved from the active OpenCode working directory, so open OpenCode in `/home/aris/projects/mem0` (or a worktree of it).
-
-## 6. Option C — Point config at the skills directory
-
-Add the directory to any `opencode.json(c)` instead of symlinking. Global example (`~/.config/opencode/opencode.json`):
-
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "skills": ["/home/aris/projects/mem0/skills"]
-}
-```
-
-Caveat: this source root also contains `README.md` and `AGENTS.md`. They register as flat skills (`README`, `AGENTS`) but have no `description`, so they are never advertised to the model. Symlinking (Options A/B) avoids this entirely.
-
-## 7. Option D — Published install (upstream only)
-
-For the released versions:
-
-```bash
-npx skills add https://github.com/mem0ai/mem0 --skill mem0
-```
-
-This pulls from upstream `main`, so it will **not** include the local modifications until the branch is merged (or you point it at your own fork/branch). Prefer Option A/B while developing the skills.
-
-## 8. Verify it works
+## 5. Verify it works
 
 1. Restart OpenCode so configuration is re-read, or start a new session. If a running service caches config, run `opencode service restart`.
 2. The six IDs above should now appear in the model's available-skills list.
 3. Load one explicitly by mentioning it in your prompt, e.g. `@mem0 explain how to add a memory`, or let the model load it via the `skill` tool with `{"id": "mem0"}`.
 4. Smoke test: ask something that should trigger the skill, e.g. *"Using mem0, add a memory for user alice."* Expect the `mem0` skill to be selected.
 
-Quick check that the source is mounted correctly:
+Quick check that the source is installed correctly:
 
 ```bash
-ls -l ~/.config/opencode/skills/mem0/SKILL.md   # Option A
-ls -l /home/aris/projects/mem0/.openwork/skills/mem0/SKILL.md   # Option B
+ls -l ~/.config/opencode/skills/mem0/SKILL.md
 ```
 
-## 9. Refresh after future edits
+## 6. Refresh after future edits
 
-- **Options A/B (symlinks):** edit files under `skills/` and the changes are live. Start a new session so the updated `SKILL.md` is re-read.
-- **Option C (config path):** same — the directory is read directly.
-- **Option D (`npx skills add`):** re-run the command, or bump the skill's `metadata.version` and reinstall.
+The global source holds copies. After changing anything under `skills/`, re-run the copy command from section 4, then start a new session so the updated `SKILL.md` is re-read.
 
-## 10. Troubleshooting
+## 7. Troubleshooting
 
 - **A skill is missing.** Confirm the file is either a root-level `*.md` in a source, or named exactly `SKILL.md` inside a subdirectory of a source.
 - **Wrong skill loads.** IDs are path-derived and case-sensitive (`mem0`, not `Mem0`); the frontmatter `name` is only a label.
@@ -131,7 +92,7 @@ ls -l /home/aris/projects/mem0/.openwork/skills/mem0/SKILL.md   # Option B
 
 - **`${CLAUDE_SKILL_DIR}` in the `mem0` skill.** The doc-search examples use this Claude Code variable. In OpenCode, use the skill's reported base directory instead, e.g. `python <skill-dir>/scripts/mem0_doc_search.py --query "graph memory"`.
 
-## 11. Notes
+## 8. Notes
 
 - The skills describe three ways to run mem0: hosted Platform (`MemoryClient`, `/v1`,`/v3`, `Authorization: Token`), the in-process OSS `Memory` class, and the self-hosted OSS REST server (`server/`, unversioned paths, `X-API-Key`). The self-hosted reference is the place to start for the server in this repo.
-- Installing skills does not modify the repo; it only registers the existing `skills/` files with OpenCode.
+- Installing skills does not modify the repo; it copies the existing `skills/` files into your OpenCode config directory.
