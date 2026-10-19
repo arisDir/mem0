@@ -38,9 +38,14 @@ def fake_user():
 
 @pytest.fixture()
 def fake_memory(monkeypatch):
-    """Replace the memory instance the routes resolve at call time."""
+    """Replace the memory instance the routes resolve at call time.
+
+    `routers/entities.py` binds `get_memory_instance` at import time, so the
+    platform-compat delegate to it needs that name patched too.
+    """
     memory = MagicMock()
     monkeypatch.setattr("server_state.get_memory_instance", lambda: memory)
+    monkeypatch.setattr("routers.entities.get_memory_instance", lambda: memory)
     return memory
 
 

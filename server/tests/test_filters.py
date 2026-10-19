@@ -29,8 +29,12 @@ def test_app_id_dropped():
 
 def test_wrap_and_ping(fake_user):
     assert wrap_results([1, 2]) == {"results": [1, 2]}
-    assert ping_payload(fake_user) == {
-        "org_id": None,
-        "project_id": None,
-        "user_email": "admin@example.com",
-    }
+    # Platform clients need an identity from /v1/ping/. The Python client reads
+    # snake_case org_id/project_id (None breaks its Project manager); the
+    # TypeScript client checks `status` and reads camelCase. Both are truthy.
+    payload = ping_payload(fake_user)
+    assert payload["status"] == "ok"
+    assert payload["org_id"] == "self-hosted" and payload["project_id"] == "self-hosted"
+    assert payload["orgId"] == "self-hosted" and payload["projectId"] == "self-hosted"
+    assert payload["user_email"] == "admin@example.com"
+    assert payload["userEmail"] == "admin@example.com"
