@@ -40,3 +40,18 @@ def test_entities_wrapped(client, fake_memory):
     fake_memory.get_all.return_value = {"results": []}
     r = client.get("/v1/entities/", headers=TOKEN)
     assert isinstance(r.json()["results"], list)
+
+
+def test_delete_entity(client, fake_memory):
+    fake_memory.delete_all.return_value = {"deleted": True}
+    r = client.delete("/v2/entities/user/alice/", headers=TOKEN)
+    assert r.status_code == 200
+
+
+def test_unsupported_summary_501(client):
+    r = client.post("/v1/summary/", headers=TOKEN, json={"filters": {"user_id": "a"}})
+    assert r.status_code == 501 and "summary" in r.json()["detail"].lower()
+
+
+def test_unsupported_batch_501(client):
+    assert client.put("/v1/batch/", headers=TOKEN, json={"memories": []}).status_code == 501
