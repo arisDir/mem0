@@ -1,13 +1,14 @@
 ---
-description: Copy all six Mem0 skills into the global OpenCode skills directory and verify them
+description: Copy all seven Mem0 skills into the global OpenCode skills directory and verify them
 ---
 
 # Install the Mem0 skills into OpenCode
 
 Follow these steps **in order** from the repository root. This is the local
-install from `OPENCODE-SKILLS.md` (sections 4–6), scoped to all six skills:
+install from `OPENCODE-SKILLS.md` (sections 4–6), scoped to all seven skills:
 `mem0`, `mem0-cli`, `mem0-vercel-ai-sdk`, `mem0-integrate`,
-`mem0-test-integration`, `mem0-oss-to-platform`. No other skills are touched.
+`mem0-test-integration`, `mem0-oss-to-platform`, `mem0-self-improvement`. No other
+skills are touched.
 
 Hard rules:
 
@@ -29,7 +30,7 @@ cd "$(git rev-parse --show-toplevel)"
 Define the list once and use it in every step below:
 
 ```bash
-SKILLS="mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform"
+SKILLS="mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform mem0-self-improvement"
 ```
 
 Every source directory must exist with a root-level `SKILL.md`; stop and report
@@ -86,7 +87,7 @@ for s in $SKILLS; do
 done
 ```
 
-Finally, confirm the destination now holds exactly the six Mem0 skills alongside
+Finally, confirm the destination now holds exactly the seven Mem0 skills alongside
 whatever else the user has installed:
 
 ```bash
@@ -97,10 +98,11 @@ ls -d "$HOME/.config/opencode/skills/"mem0* | sort
 
 Give the user a short summary:
 
-- **Installed:** all six skills — `mem0`, `mem0-cli`, `mem0-vercel-ai-sdk`,
-  `mem0-integrate`, `mem0-test-integration`, `mem0-oss-to-platform` — copied
+- **Installed:** all seven skills — `mem0`, `mem0-cli`, `mem0-vercel-ai-sdk`,
+  `mem0-integrate`, `mem0-test-integration`, `mem0-oss-to-platform`,
+  `mem0-self-improvement` — copied
   from `skills/` into `~/.config/opencode/skills/`.
-- **Verified:** all six `SKILL.md` files exist at the expected paths and all
+- **Verified:** all seven `SKILL.md` files exist at the expected paths and all
   declare a `description`.
 - **Next step:** restart OpenCode or start a new session so the configuration
   is re-read (if a running service caches config, run

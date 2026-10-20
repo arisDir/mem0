@@ -1,8 +1,8 @@
 # Installing the Mem0 Skills in OpenCode
 
-How to make the six Mem0 skills in [`skills/`](./skills/) available to OpenCode, and how to refresh them after you edit the skills.
+How to make the seven Mem0 skills in [`skills/`](./skills/) available to OpenCode, and how to refresh them after you edit the skills.
 
-The skills were updated in commit `docs(skills): make all skills aware of the self-hosted OSS server` (all six now cover the self-hosted OSS server and the Python-only `ollama` reranker). Use the local install below to pick up those changes — the published `npx skills add` path still serves the upstream version until this branch is merged.
+The skills were updated in commit `docs(skills): make all skills aware of the self-hosted OSS server` (all six SDK skills now cover the self-hosted OSS server and the Python-only `ollama` reranker). Use the local install below to pick up those changes — the published `npx skills add` path still serves the upstream version until this branch is merged.
 
 ---
 
@@ -18,6 +18,7 @@ Each skill is a directory with a `SKILL.md` entry point. OpenCode derives the **
 | `mem0-integrate` | `skills/mem0-integrate/` | Wire Mem0 into a repo via a TDD pipeline (pipeline skill) |
 | `mem0-test-integration` | `skills/mem0-test-integration/` | Verify an integration (pipeline skill) |
 | `mem0-oss-to-platform` | `skills/mem0-oss-to-platform/` | Migrate OSS → hosted Platform (pipeline skill) |
+| `mem0-self-improvement` | `skills/mem0-self-improvement/` | Self-improving capture: structured Trigger/Correction/Pattern-Key records in mem0 (capture skill) |
 
 The canonical self-hosted reference is [`skills/mem0/references/self-hosted-server.md`](./skills/mem0/references/self-hosted-server.md).
 
@@ -49,7 +50,7 @@ Copy the skill folders into the global source so they are available in every pro
 mkdir -p ~/.config/opencode/skills
 # Delete only the mem0 skills (pattern), leaving any other skills in place.
 rm -rf "$HOME/.config/opencode/skills/"mem0*
-for s in mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform; do
+for s in mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform mem0-self-improvement; do
   cp -R "/home/aris/projects/mem0/skills/$s" "$HOME/.config/opencode/skills/$s"
 done
 ls -l ~/.config/opencode/skills
@@ -60,7 +61,7 @@ Because these are copies, re-run this command after editing the skills to pick u
 ## 5. Verify it works
 
 1. Restart OpenCode so configuration is re-read, or start a new session. If a running service caches config, run `opencode service restart`.
-2. The six IDs above should now appear in the model's available-skills list.
+2. The seven IDs above should now appear in the model's available-skills list.
 3. Load one explicitly by mentioning it in your prompt, e.g. `@mem0 explain how to add a memory`, or let the model load it via the `skill` tool with `{"id": "mem0"}`.
 4. Smoke test: ask something that should trigger the skill, e.g. *"Using mem0, add a memory for user alice."* Expect the `mem0` skill to be selected.
 

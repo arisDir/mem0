@@ -2,7 +2,7 @@
 
 Claude Code skill definitions published from this repo. Agents fetch them by raw URL, so treat every file here as a public API.
 
-## The two kinds
+## The three kinds
 
 **Reference skills** carry SDK knowledge and are always available:
 
@@ -21,6 +21,12 @@ Claude Code skill definitions published from this repo. Agents fetch them by raw
 | `mem0-oss-to-platform/` | Migrates a project from OSS to the hosted Platform SDK. Plans first, executes on approval. |
 
 `mem0-integrate` and `mem0-test-integration` are **loosely coupled**: they share state only through `.mem0-integration/` files, never through conversation context.
+
+**Capture skills** are always on and have side effects on memory, not on the repo:
+
+| Skill | Does |
+|-------|------|
+| `mem0-self-improvement/` | Records the developer's corrections, unexpected command failures, and user feedback to mem0 as structured Trigger / Correction / Pattern-Key records, so the agent stops repeating mistakes across sessions. Writes memories only; never touches the repo. |
 
 ## File layout
 
@@ -63,6 +69,7 @@ mem0-integrate/SKILL.md                   220   entry point
 mem0-vercel-ai-sdk/SKILL.md               210   entry point
 mem0/SKILL.md                             194   entry point
 mem0-cli/SKILL.md                         170   entry point
+mem0-self-improvement/SKILL.md            155   entry point
 mem0-oss-to-platform/SKILL.md             132   entry point
 ```
 
