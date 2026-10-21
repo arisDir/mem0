@@ -5,6 +5,7 @@ services:
     build:
       context: ..
       dockerfile: server/dev.Dockerfile
+    restart: unless-stopped
     ports:
       - "8888:8000"
     extra_hosts:
@@ -38,7 +39,7 @@ services:
 
   postgres:
       image: pgvector/pgvector:pg17
-      restart: on-failure
+      restart: unless-stopped
       shm_size: "128mb"
       networks:
         - mem0_network
@@ -58,6 +59,7 @@ services:
 
   mem0-dashboard:
     build: ./dashboard
+    restart: unless-stopped
     ports:
       - "3000:3000"
     networks:
