@@ -182,7 +182,26 @@ user may have set deliberately, such as `AUTH_DISABLED`).
 
 ## 6. Start the stack and create the admin (Agent-first)
 
+Clear the bind-mounted scratch directory first, then start the stack.
+`server/history/` holds the conversation history (`history.db`) and the telemetry
+state (`telemetry.json`). It is gitignored and `make clean` never touches it, so
+a previous run can leave rows behind that make the step 8 smoke test extract
+nothing: the extractor sees the earlier message as already captured and returns
+no memories.
+
+The clear runs inside a container because Docker creates the bind-mount point
+as `root` — `rm -rf history/*` from the host fails with `Permission denied`. It
+runs before `make up` because the API container keeps a persistent SQLite
+handle on `history/history.db`; deleting that file underneath a running
+container leaves it writing to an unlinked inode, so the host and the container
+end up with different databases. Only local scratch state is removed: memories,
+users and API keys live in Postgres and are untouched, while the stored
+conversation messages and the per-memory change history the dashboard shows are
+not, so skip this when re-running against an install whose history you want to
+keep.
+
 ```bash
+docker compose run --rm --no-deps -T --entrypoint sh mem0 -c 'find /app/history -mindepth 1 -delete'
 make up
 curl -fsS http://localhost:8888/auth/setup-status; echo
 ```
