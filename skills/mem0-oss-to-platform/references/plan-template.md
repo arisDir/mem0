@@ -13,7 +13,7 @@ findings — don't leave placeholders. Drop a section only if it genuinely doesn
 - Counts: N files touched, M call sites, plus config/deps/env changes.
 
 ## Prerequisites
-- `MEM0_API_KEY` must be set in the environment before execution/verification (https://app.mem0.ai).
+- `MEM0_API_KEY` and `MEM0_BASE_URL` must be set in the environment before execution/verification (https://app.mem0.ai). Both are required for the Platform-client approach and must be provided and exported; the base URL for REST endpoints is derived from `MEM0_BASE_URL`. If the agent detects them in the environment, it will utilize these values for `MemoryClient`/`AsyncMemoryClient`.
 - Note where it should live (`.env`, secrets manager, CI, deploy config).
 
 ## Inventory
@@ -44,7 +44,7 @@ unambiguous. Example:
 ## Dependencies & config
 - `requirements.txt` / `pyproject.toml` / `package.json`: keep `mem0ai`; remove now-unused local-
   infra deps (list them, with the reason each is safe to remove).
-- Env: add `MEM0_API_KEY`; remove env vars only used by the old local embedder/LLM if now unused.
+- Env: add `MEM0_API_KEY` and `MEM0_BASE_URL` (must be provided and exported for Platform-client approach; base URL derived from `MEM0_BASE_URL`); remove env vars only used by the old local embedder/LLM if now unused. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values for `MemoryClient`/`AsyncMemoryClient`.
 - Infrastructure: local services that existed only for mem0 (e.g. a Qdrant docker-compose service)
   can be retired — listed for the developer's confirmation, not auto-deleted.
 
@@ -65,7 +65,7 @@ about which file/line each concern affects.
 ## Verification plan
 How execution will be confirmed end-to-end:
 - Imports / type-checks / byte-compiles cleanly.
-- Smoke test against the hosted API with a real `MEM0_API_KEY`: `add` a fact → `search`/`get_all`
+- Smoke test against the hosted API with a real `MEM0_API_KEY` and `MEM0_BASE_URL`: `add` a fact → `search`/`get_all` (base URL derived from `MEM0_BASE_URL`)
   returns it → `delete_all` clears it. Plus: the app's own entry point still runs.
 - Confirm no local OSS storage is created anymore (e.g. `~/.mem0/history.db`, a local Qdrant path).
   The client still creates `~/.mem0/config.json`, so the bare `.mem0/` directory is not the check.

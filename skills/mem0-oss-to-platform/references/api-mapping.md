@@ -31,11 +31,15 @@ memory = Memory.from_config({           # all of this local config disappears
 
 # Platform (hosted)
 from mem0 import MemoryClient
-memory = MemoryClient()                 # reads MEM0_API_KEY from the env
-# or: MemoryClient(api_key="...")
+import os
+memory = MemoryClient(
+    api_key=os.environ.get("MEM0_API_KEY"),
+    host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"),  # Must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL
+)
+# or: MemoryClient(api_key="...", host="...")
 ```
 Notes:
-- The client reads `MEM0_API_KEY` from the environment when `api_key` is omitted.
+- The client reads `MEM0_API_KEY` from the environment when `api_key` is omitted; for Platform-client approach both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported. The base URL for Mem0 Platform REST API endpoints is derived from `MEM0_BASE_URL`. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values for `MemoryClient`/`AsyncMemoryClient`.
 - **Drop** `vector_store`, `llm`, `embedder`, `reranker`, `history_db_path`, `version` (and
   `graph_store` if a pre-2.0 config still has it): these are managed server-side now.
 - `custom_instructions` does have a hosted equivalent: `client.project.update(custom_instructions=...)`
@@ -83,11 +87,11 @@ const memory = new Memory({ /* vectorStore, embedder, llm, historyStore, reranke
 
 // Platform (hosted): default export from the package root
 import MemoryClient from "mem0ai";
-const memory = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const memory = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });  // Both MEM0_API_KEY and MEM0_BASE_URL must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL
 ```
 Notes:
 - Unlike Python, the TS client does **not** read `MEM0_API_KEY` itself: `apiKey` is required and the
-  constructor throws if it is empty. Pass it explicitly.
+  constructor throws if it is empty. Both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported for the Platform-client approach; pass them explicitly as `apiKey` and `host`. The base URL for REST endpoints is derived from `MEM0_BASE_URL`. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values.
 - Drop `organizationId` / `projectId` if present, they're resolved from the API key.
 - Drop `vectorStore`, `embedder`, `llm`, `historyStore`, `historyDbPath`, `reranker`, `disableHistory`,
   `version`. `customInstructions` maps to `client.updateProject({ customInstructions })` or

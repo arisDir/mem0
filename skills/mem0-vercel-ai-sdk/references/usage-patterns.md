@@ -1,6 +1,6 @@
 # Usage Patterns and Examples
 
-Working examples for `@mem0/vercel-ai-provider`. All examples assume environment variables `MEM0_API_KEY` and the relevant LLM provider API key are set.
+Working examples for `@mem0/vercel-ai-provider`. All examples assume environment variables `MEM0_API_KEY`, `MEM0_BASE_URL` (must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL), and the relevant LLM provider API key are set. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values for the Platform-client approach.
 
 ## 1. Wrapped Model with generateText (Basic)
 

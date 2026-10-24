@@ -259,13 +259,14 @@ fi
 ### Non-interactive init in CI
 
 ```bash
-mem0 init --api-key "$MEM0_API_KEY" --user-id ci-bot --force
-```
+mem0 init --api-key "$MEM0_API_KEY" --base-url "$MEM0_BASE_URL" --user-id ci-bot --force
+```  # Both MEM0_API_KEY and MEM0_BASE_URL must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL
 
 Or simply use the environment variable (no init needed):
 
 ```bash
 export MEM0_API_KEY="$MEM0_API_KEY"
+export MEM0_BASE_URL="$MEM0_BASE_URL"  # Must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL
 mem0 add "CI run started" --user-id ci-bot
 ```
 
@@ -356,6 +357,7 @@ mem0 delete --all --user-id temp-user --force --output quiet 2>/dev/null
 ```bash
 export MEM0_USER_ID="alice"
 export MEM0_API_KEY="m0-xxx"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL
 
 # All commands now default to user alice, no --user-id needed
 mem0 add "prefers dark mode"

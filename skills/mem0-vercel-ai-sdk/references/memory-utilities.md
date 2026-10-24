@@ -198,7 +198,7 @@ async function searchInternalMemories(
 
 **Behavior:**
 1. Builds a `filters` object from `config.filters`, then sets `user_id`, `app_id`, `agent_id`, `run_id` on it when present (entity IDs go inside `filters`, never top-level)
-2. Loads the API key from `config.mem0ApiKey` or `MEM0_API_KEY` env var
+2. Loads the API key from `config.mem0ApiKey` or `MEM0_API_KEY` env var; base URL from `config.mem0BaseUrl` or `MEM0_BASE_URL` env var (both must be provided and exported for Platform-client approach; base URL derived from `MEM0_BASE_URL`)
 3. Calls `POST {host}/v3/memories/search/` with:
    - `query`: the search string
    - `filters`: the filter object with entity identifiers
@@ -258,7 +258,8 @@ All fields are optional. Used across all utility functions.
 | `infer` | `boolean` | -- | Sent on add only. `false` stores messages verbatim without extraction |
 | `page` | `number` | -- | Declared in the type, not sent by the provider |
 | `page_size` | `number` | -- | Declared in the type, not sent by the provider |
-| `mem0ApiKey` | `string` | `MEM0_API_KEY` env | Mem0 API key |
+| `mem0ApiKey` | `string` | `MEM0_API_KEY` env | Mem0 API key (required) |
+| `mem0BaseUrl` | `string` | `MEM0_BASE_URL` env | Mem0 base URL (must be provided and exported for Platform-client approach; base URL derived from `MEM0_BASE_URL`) |
 | `top_k` | `number` | `10` | Number of memories to retrieve |
 | `threshold` | `number` | -- | Server-side relevance cutoff, not a floor on the returned score; sent only when set |
 | `rerank` | `boolean` | -- (API default `false`) | Enable re-ranking, sent only when set |

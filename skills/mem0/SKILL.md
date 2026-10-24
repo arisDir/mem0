@@ -19,7 +19,7 @@ metadata:
   category: ai-memory
   tags: "memory, personalization, ai, python, typescript, vector-search"
   mem0_tested_versions: "mem0ai (PyPI) >=2.0.0,<3.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
-compatibility: Requires Python 3.10+ or Node.js 18+, pip install mem0ai or npm install mem0ai, MEM0_API_KEY env var (Platform), and internet access to api.mem0.ai. Targets the v3 API (Python mem0ai 2.x, TypeScript mem0ai 3.x).
+compatibility: Requires Python 3.10+ or Node.js 18+, pip install mem0ai or npm install mem0ai, MEM0_API_KEY env var (Platform) and MEM0_BASE_URL env var (Platform, must be provided and exported for Platform-client approach), and internet access to the base URL derived from MEM0_BASE_URL. Targets the v3 API (Python mem0ai 2.x, TypeScript mem0ai 3.x).
 ---
 
 # Mem0 Platform Integration
@@ -37,16 +37,20 @@ Mem0 is a managed memory layer for AI applications. It stores, retrieves, and ma
 ```bash
 pip install mem0ai
 export MEM0_API_KEY="m0-your-api-key"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported; for self-hosted use your server URL (e.g. http://localhost:8888)
 ```
 
 **TypeScript/JavaScript:**
 ```bash
 npm install mem0ai
 export MEM0_API_KEY="m0-your-api-key"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported; for self-hosted use your server URL (e.g. http://localhost:8888)
 ```
 
 Get an API key at: https://app.mem0.ai/dashboard/api-keys?utm_source=oss&utm_medium=skill-mem0
 
+> **Environment variables (Platform-client):** When using `MemoryClient` or `AsyncMemoryClient` (Platform-client approach), both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported. The base URL for Mem0 Platform REST API endpoints is derived from `MEM0_BASE_URL`. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values for the "Platform-client" approach when invoking `MemoryClient` or `AsyncMemoryClient`.
+> 
 > **Don't have a `MEM0_API_KEY`?** Run `mem0 init --agent --agent-caller <your-name> --json` (after `pip install mem0-cli` or `npm install -g @mem0/cli`), substituting your agent identity (e.g. `claude-code`, `cursor`). If you forgot to pass `--agent-caller`, run `mem0 identify <your-name>` after init. The human can claim later with `mem0 init --email <your-email>`.
 
 ## Step 2: Initialize the client
@@ -54,16 +58,27 @@ Get an API key at: https://app.mem0.ai/dashboard/api-keys?utm_source=oss&utm_med
 **Python:**
 ```python
 from mem0 import MemoryClient
-client = MemoryClient(api_key="m0-xxx")
+import os
+
+client = MemoryClient(
+    api_key=os.environ.get("MEM0_API_KEY", "m0-xxx"),
+    host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"),
+)
 ```
 
 **TypeScript:**
 ```typescript
 import MemoryClient from 'mem0ai';
-const client = new MemoryClient({ apiKey: 'm0-xxx' });
+
+const client = new MemoryClient({
+    apiKey: process.env.MEM0_API_KEY || 'm0-xxx',
+    host: process.env.MEM0_BASE_URL || 'https://api.mem0.ai',
+});
 ```
 
-For async Python, use `AsyncMemoryClient`.
+For async Python, use `AsyncMemoryClient` with the same `api_key` and `host` (or rely on environment variables `MEM0_API_KEY` and `MEM0_BASE_URL`).
+
+> **Note:** If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` within the environment variables, it will utilize these values for the "Platform-client" approach when invoking `MemoryClient` or `AsyncMemoryClient`. All Platform-client instantiations must pass `host` (derived from `MEM0_BASE_URL`). The base URL for Mem0 Platform REST API endpoints is derived from the `MEM0_BASE_URL` value.
 
 ## Step 3: Core operations
 
@@ -138,7 +153,7 @@ def chat(user_input: str, user_id: str) -> str:
 - **Search returns empty:** `add()` is asynchronous and returns `{"event_id": "...", "status": "PENDING"}` (`eventId` on the TS client). Memories are searchable once the event is `SUCCEEDED` (poll `GET /v1/event/{event_id}/`, or wait a few seconds). `infer=False` is synchronous. Also verify `user_id` matches exactly (case-sensitive) and use `filters={"user_id": "..."}` syntax.
 - **AND filter with user_id + agent_id returns empty:** Entities are stored separately. Use `OR` instead, or query separately.
 - **Duplicate memories:** Don't mix `infer=True` (default) and `infer=False` for the same data. Stick to one mode.
-- **Wrong import:** For the hosted Platform use `from mem0 import MemoryClient` (or `AsyncMemoryClient` for async). `from mem0 import Memory` is the self-hosted OSS class and does not use `MEM0_API_KEY`.
+- **Wrong import:** For the hosted Platform use `from mem0 import MemoryClient` (or `AsyncMemoryClient` for async). `from mem0 import Memory` is the self-hosted OSS class and does not use `MEM0_API_KEY` or `MEM0_BASE_URL`. When using the Platform-client approach, both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported; the base URL for REST endpoints is derived from `MEM0_BASE_URL`. If detected in the environment, the agent will use them for `MemoryClient`/`AsyncMemoryClient`.
 - **v3 defaults (Platform):** `top_k=10`, `rerank=False`. `threshold` is a server-side cutoff applied before score blending, not a floor on the returned `score` (the default and `0.0` return the same or nearly the same results). The client sends none of these unless you pass them. The OSS `Memory.search()` default is `top_k=20`. Adjust as needed for your use case.
 
 ## v2 Compatibility

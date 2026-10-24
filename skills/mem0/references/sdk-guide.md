@@ -9,13 +9,13 @@ Complete SDK reference for Python and TypeScript. All methods use `MemoryClient`
 **Python:**
 ```python
 from mem0 import MemoryClient
-client = MemoryClient(api_key="m0-your-api-key")
+client = MemoryClient(api_key="m0-your-api-key", host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"))
 ```
 
 **Python (Async):**
 ```python
 from mem0 import AsyncMemoryClient
-client = AsyncMemoryClient(api_key="m0-your-api-key")
+client = AsyncMemoryClient(api_key="m0-your-api-key", host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"))
 ```
 
 **TypeScript:**

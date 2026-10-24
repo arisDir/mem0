@@ -2,7 +2,7 @@
 
 REST API endpoints for the Mem0 Platform. Base URL: `https://api.mem0.ai`
 
-All endpoints require: `Authorization: Token <MEM0_API_KEY>`
+All endpoints require: `Authorization: Token <MEM0_API_KEY>`. The base URL for Mem0 Platform REST API endpoints is derived from `MEM0_BASE_URL` (must be provided and exported for the Platform-client approach). If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` within the environment variables, it will utilize these values for the "Platform-client" approach when invoking `MemoryClient` or `AsyncMemoryClient`.
 
 ## Endpoints
 

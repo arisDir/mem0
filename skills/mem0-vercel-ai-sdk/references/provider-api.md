@@ -56,6 +56,7 @@ interface Mem0ProviderSettings {
   headers?: Record<string, string | undefined>;  // Stored on the model config, not applied to upstream LLM requests
   provider?: string;           // LLM provider name (default: "openai")
   mem0ApiKey?: string;         // Mem0 Platform API key (or use MEM0_API_KEY env var)
+  mem0BaseUrl?: string;        // Mem0 base URL (must be provided and exported for Platform-client approach; use MEM0_BASE_URL env var; base URL derived from MEM0_BASE_URL)
   apiKey?: string;             // LLM provider API key (e.g., OpenAI key)
   mem0Config?: Mem0Config;     // Default Mem0 config (user_id, etc.) applied to all calls
   config?: LLMProviderSettings; // Provider-specific settings (OpenAI, Anthropic, etc.)
@@ -185,7 +186,7 @@ const chatModel = mem0.chat("gpt-5-mini", { user_id: "alice" });
 const completionModel = mem0.completion("gpt-5-mini");
 ```
 
-The facade defaults its base URL to `"https://api.openai.com"`. It always uses `"openai"` as the provider for created models, and only stores `baseURL` and `headers` from its options: the `provider`, `mem0ApiKey`, and `apiKey` options are ignored, so `MEM0_API_KEY` and `OPENAI_API_KEY` must come from the environment. Prefer `createMem0` for anything beyond a quick start.
+The facade defaults its base URL to `"https://api.openai.com"`. It always uses `"openai"` as the provider for created models, and only stores `baseURL` and `headers` from its options: the `provider`, `mem0ApiKey`, `mem0BaseUrl`, and `apiKey` options are ignored, so `MEM0_API_KEY`, `MEM0_BASE_URL` (must be provided and exported for Platform-client approach; base URL derived from `MEM0_BASE_URL`) and `OPENAI_API_KEY` must come from the environment. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values for the Platform-client approach. Prefer `createMem0` for anything beyond a quick start.
 
 **Methods:**
 - `chat(modelId, settings?)` -- creates a model with `modelType: "chat"`

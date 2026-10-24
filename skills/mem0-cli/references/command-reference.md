@@ -103,7 +103,7 @@ Commands for the AGENTRUSH event game. Memories are public to other players, so 
 **Usage:** `mem0 agent-rush add <content>` and `mem0 agent-rush search <query>`
 
 - `add`: content must be 50-1000 characters with no URLs. The server requires 3 searches before adding and caps each key at 3 lifetime searches and 3 lifetime adds.
-- Requires an API key from config or `MEM0_API_KEY` (otherwise errors with "Not initialized. Run `mem0 init --agent` first."). Node joins unquoted words into one string; Python takes a single quoted argument.
+- Requires an API key from config or `MEM0_API_KEY` and base URL from config or `MEM0_BASE_URL` (otherwise errors). Both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported for the Platform-client approach; the base URL for REST endpoints is derived from `MEM0_BASE_URL`. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment, it will utilize these values for the Platform-client approach. Node joins unquoted words into one string; Python takes a single quoted argument.
 
 **Examples:**
 ```bash

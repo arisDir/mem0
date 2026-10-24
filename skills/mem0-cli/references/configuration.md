@@ -192,6 +192,7 @@ Environment variables override config file values but are overridden by CLI flag
 | Variable | Config Path | Type | Default |
 |----------|-------------|------|---------|
 | `MEM0_API_KEY` | `platform.api_key` | string | `""` |
+| `MEM0_BASE_URL` | `platform.base_url` | string | `""` | Must be provided and exported for Platform-client approach; base URL for REST endpoints derived from `MEM0_BASE_URL`. If detected in env, agent uses for Platform-client approach. |
 | `MEM0_BASE_URL` | `platform.base_url` | string | `"https://api.mem0.ai"` |
 | `MEM0_USER_ID` | `defaults.user_id` | string | `""` |
 | `MEM0_AGENT_ID` | `defaults.agent_id` | string | `""` |
@@ -207,7 +208,7 @@ Configuration values are resolved in this order (highest priority first):
 
 ```
 1. CLI flags        --api-key, --user-id, --base-url, etc.
-2. Environment vars MEM0_API_KEY, MEM0_USER_ID, etc.
+2. Environment vars MEM0_API_KEY, MEM0_BASE_URL, MEM0_USER_ID, etc. (Both MEM0_API_KEY and MEM0_BASE_URL must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL. If detected in env, agent uses for Platform-client approach.)
 3. Config file      ~/.mem0/config.json
 4. Defaults         Hardcoded defaults (empty strings, false, https://api.mem0.ai)
 ```

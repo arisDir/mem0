@@ -11,17 +11,24 @@ Complete reference for the `mem0ai` Python package. Covers both the Platform cli
 ```bash
 pip install mem0ai
 export MEM0_API_KEY="m0-your-api-key"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; for self-hosted use your server URL (e.g. http://localhost:8888). The base URL for REST endpoints is derived from MEM0_BASE_URL.
 ```
 
 ### MemoryClient (Synchronous)
 
 ```python
 from mem0 import MemoryClient
+import os
 
-client = MemoryClient(api_key="m0-xxx")
+client = MemoryClient(
+    api_key=os.environ.get("MEM0_API_KEY", "m0-xxx"),
+    host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"),
+)
 ```
 
-**Constructor:** `MemoryClient(api_key=None, host=None, client=None)`. If `api_key` is not provided, reads from `MEM0_API_KEY` environment variable. Raises `ValueError` if no key found. `host` overrides the base URL and `client` accepts a custom `httpx.Client`. `MEM0_SOURCE`, `MEM0_APPLICATION` and `MEM0_CLIENT_STACK` set the request identity headers for wrappers.
+**Constructor:** `MemoryClient(api_key=None, host=None, client=None)`. If `api_key` is not provided, reads from `MEM0_API_KEY` environment variable. Raises `ValueError` if no key found. `host` overrides the base URL (must be provided when using Platform-client approach; if `MEM0_BASE_URL` is set in env, use it). `client` accepts a custom `httpx.Client`. `MEM0_SOURCE`, `MEM0_APPLICATION` and `MEM0_CLIENT_STACK` set the request identity headers for wrappers. 
+
+> **Environment:** Both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported for the Platform-client approach. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` within the environment variables, it will utilize these values for the "Platform-client" approach when invoking `MemoryClient` or `AsyncMemoryClient`. The base URL for Mem0 Platform REST API endpoints is derived from the `MEM0_BASE_URL` value.
 
 - HTTP library: `httpx`
 - Timeout: 300 seconds
@@ -31,15 +38,22 @@ client = MemoryClient(api_key="m0-xxx")
 
 ```python
 from mem0 import AsyncMemoryClient
+import os
 
-client = AsyncMemoryClient(api_key="m0-xxx")
+client = AsyncMemoryClient(
+    api_key=os.environ.get("MEM0_API_KEY", "m0-xxx"),
+    host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"),
+)
 
 # Or use as context manager
-async with AsyncMemoryClient(api_key="m0-xxx") as client:
+async with AsyncMemoryClient(
+    api_key=os.environ.get("MEM0_API_KEY", "m0-xxx"),
+    host=os.environ.get("MEM0_BASE_URL", "https://api.mem0.ai"),
+) as client:
     results = await client.search("query", filters={"user_id": "alice"})
 ```
 
-Same methods as `MemoryClient`, all `async`/`await`. Supports async context manager.
+Same methods as `MemoryClient`, all `async`/`await`. Supports async context manager. Both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported for the Platform-client approach; if detected in the environment, the agent will utilize these values. The base URL for Mem0 Platform REST API endpoints is derived from `MEM0_BASE_URL`.
 
 ---
 
@@ -471,7 +485,7 @@ results = await m.search("query", filters={"user_id": "alice"})
 | Aspect | Platform (`MemoryClient`) | OSS (`Memory`) |
 |--------|--------------------------|----------------|
 | **Import** | `from mem0 import MemoryClient` | `from mem0 import Memory` |
-| **Auth** | API key required (`MEM0_API_KEY`) | No API key -- config-based |
+| **Auth** | API key required (`MEM0_API_KEY`) + base URL via `MEM0_BASE_URL`/`host` (must be provided for Platform-client approach) | No API key -- config-based |
 | **Execution** | API calls to `api.mem0.ai` | Local execution |
 | **Infrastructure** | Fully managed | Self-managed vector DB, embedder, LLM |
 | **Entity filtering** | `filters={"user_id": "..."}` | `filters={"user_id": "..."}` |

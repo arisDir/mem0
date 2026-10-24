@@ -11,6 +11,7 @@ Complete reference for the `mem0ai` npm package. Covers both the Platform client
 ```bash
 npm install mem0ai
 export MEM0_API_KEY="m0-your-api-key"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; for self-hosted use your server URL (e.g. http://localhost:8888). The base URL for REST endpoints is derived from MEM0_BASE_URL.
 ```
 
 ### MemoryClient
@@ -18,10 +19,15 @@ export MEM0_API_KEY="m0-your-api-key"
 ```typescript
 import MemoryClient from 'mem0ai';
 
-const client = new MemoryClient({ apiKey: 'm0-xxx' });
+const client = new MemoryClient({
+  apiKey: process.env.MEM0_API_KEY || 'm0-xxx',
+  host: process.env.MEM0_BASE_URL || 'https://api.mem0.ai',
+});
 ```
 
-**Constructor:** `new MemoryClient({ apiKey, host?, identityCacheMax? })`. `apiKey` is required: the constructor throws `Mem0 API key is required` when it is missing or empty. There is no `MEM0_API_KEY` environment fallback, so pass `apiKey: process.env.MEM0_API_KEY` yourself.
+**Constructor:** `new MemoryClient({ apiKey, host?, identityCacheMax? })`. `apiKey` is required: the constructor throws `Mem0 API key is required` when it is missing or empty. There is no `MEM0_API_KEY` environment fallback, so pass `apiKey: process.env.MEM0_API_KEY` yourself. `host` overrides the base URL (default: `https://api.mem0.ai`) and must be set from `MEM0_BASE_URL` for Platform-client approach. 
+
+> **Environment:** Both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported for the Platform-client approach. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` within the environment variables, it will utilize these values for the "Platform-client" approach when invoking `MemoryClient` or `AsyncMemoryClient`. The base URL for Mem0 Platform REST API endpoints is derived from the `MEM0_BASE_URL` value.
 
 - Also a named export: `import { MemoryClient, Feedback, WebhookEvent } from 'mem0ai'`
 - HTTP library: native `fetch` (the axios instance in `mem0.ts` is unused)
@@ -455,7 +461,7 @@ await m.reset();
 | Aspect | Platform (`MemoryClient`) | OSS (`Memory`) |
 |--------|--------------------------|----------------|
 | **Import** | `import MemoryClient from 'mem0ai'` | `import { Memory } from 'mem0ai/oss'` |
-| **Auth** | API key required (`apiKey` option) | No Mem0 API key -- config-based |
+| **Auth** | API key required (`apiKey` option) + base URL via `host`/`MEM0_BASE_URL` (must be provided for Platform-client approach) | No Mem0 API key -- config-based |
 | **Execution** | API calls to `api.mem0.ai` | Local execution |
 | **Infrastructure** | Fully managed | Self-managed vector DB, embedder, LLM |
 | **Param style** | Top-level: `camelCase` (`userId`, `topK`), filter keys: `snake_case` (`user_id`) | Top-level: `camelCase` (`userId`, `topK`), filter keys: `snake_case` (`user_id`) |

@@ -8,10 +8,10 @@ Quick-reference cheatsheet for developers working across both Mem0 SDKs.
 |--------|--------|------------|
 | Import (Platform) | `from mem0 import MemoryClient` | `import MemoryClient from 'mem0ai'` |
 | Import (OSS) | `from mem0 import Memory` | `import { Memory } from 'mem0ai/oss'` |
-| Constructor | `MemoryClient(api_key="m0-xxx")` | `new MemoryClient({ apiKey: 'm0-xxx' })` |
-| Required param | `api_key` (optional, falls back to `MEM0_API_KEY`) | `apiKey` (required, in options object) |
+| Constructor | `MemoryClient(api_key="m0-xxx", host="...")` | `new MemoryClient({ apiKey: 'm0-xxx', host: '...' })` |
+| Required param | `api_key` (optional, falls back to `MEM0_API_KEY`); `host` must be provided for Platform-client approach (from `MEM0_BASE_URL`) | `apiKey` (required, in options object); `host` must be provided for Platform-client approach (from `MEM0_BASE_URL`) |
 
-Python reads `MEM0_API_KEY` if no key is passed. TypeScript does not read the environment: pass `apiKey: process.env.MEM0_API_KEY` yourself.
+Python reads `MEM0_API_KEY` if no key is passed. TypeScript does not read the environment: pass `apiKey: process.env.MEM0_API_KEY` and `host: process.env.MEM0_BASE_URL` yourself. Both `MEM0_API_KEY` and `MEM0_BASE_URL` must be provided and exported for the Platform-client approach. If the agent detects `MEM0_API_KEY` and `MEM0_BASE_URL` within the environment variables, it will utilize these values for the "Platform-client" approach when invoking `MemoryClient` or `AsyncMemoryClient`. The base URL for Mem0 Platform REST API endpoints is derived from the `MEM0_BASE_URL` value.
 
 ## Method Naming
 

@@ -52,6 +52,7 @@ curl -X POST https://api.anthropic.com/v1/skills \
 
   ```bash
   export MEM0_API_KEY="m0-your-api-key"
+  export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; for self-hosted use your server URL. Base URL derived from MEM0_BASE_URL. If detected in env, agent uses for Platform-client approach.
   ```
 
   Or run `mem0 init` for the interactive setup wizard.

@@ -16,7 +16,7 @@ metadata:
   category: ai-memory
   tags: "vercel, ai-sdk, memory, nextjs, typescript, provider"
   mem0_tested_versions: "@mem0/vercel-ai-provider (npm) >=3.0.0,<4.0.0; ai (npm) >=6.0.0,<7.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
-compatibility: Node.js 18+, npm install @mem0/vercel-ai-provider, Vercel AI SDK v6 (ai package ^6), MEM0_API_KEY + LLM provider API key
+compatibility: Node.js 18+, npm install @mem0/vercel-ai-provider, Vercel AI SDK v6 (ai package ^6), MEM0_API_KEY + MEM0_BASE_URL (must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL, if detected in env agent uses for Platform-client approach) + LLM provider API key
 ---
 
 # Mem0 Vercel AI SDK Provider
@@ -35,6 +35,7 @@ npm install @mem0/vercel-ai-provider ai@^6
 
 ```bash
 export MEM0_API_KEY="m0-xxx"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL; if detected in env agent uses for Platform-client approach
 export OPENAI_API_KEY="sk-xxx"   # or ANTHROPIC_API_KEY, GOOGLE_API_KEY, etc.
 ```
 

@@ -44,6 +44,7 @@ curl -X POST https://api.anthropic.com/v1/skills \
 
   ```bash
   export MEM0_API_KEY="m0-xxx"
+  export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL; if detected in env agent uses for Platform-client approach
   export OPENAI_API_KEY="sk-xxx"  # or your chosen provider's key
   ```
 

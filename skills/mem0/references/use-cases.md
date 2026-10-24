@@ -67,7 +67,7 @@ chat("What should I focus on today?", user_id="max")
 import MemoryClient from 'mem0ai';
 import OpenAI from 'openai';
 
-const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 const openai = new OpenAI();
 
 async function chat(userInput: string, userId: string): Promise<string> {
@@ -168,7 +168,7 @@ billing = get_billing_issues("maria")  # Returns only billing-related memories
 ```typescript
 import MemoryClient from 'mem0ai';
 
-const client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 
 // Setup categories (one-time)
 await client.updateProject({
@@ -258,7 +258,7 @@ consult("alex", "Can I take amoxicillin for my sore throat?")
 import MemoryClient from 'mem0ai';
 import OpenAI from 'openai';
 
-const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 const openai = new OpenAI();
 
 async function savePatientInfo(userId: string, info: string) {
@@ -353,7 +353,7 @@ draft_content("writer_01", "Why AI memory matters for chatbots")
 import MemoryClient from 'mem0ai';
 import OpenAI from 'openai';
 
-const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 const openai = new OpenAI();
 
 async function storePreferences(userId: string, preferences: string) {
@@ -458,7 +458,7 @@ agent_mems = search_agent_knowledge("common dietary restrictions?", "travel_plan
 ```typescript
 import MemoryClient from 'mem0ai';
 
-const client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 
 async function storeScopedMemory(
     messages: Array<{ role: string; content: string }>,
@@ -548,7 +548,7 @@ personalized_search("user_42", "best restaurants nearby", ["Restaurant A", "Rest
 import MemoryClient from 'mem0ai';
 import OpenAI from 'openai';
 
-const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const mem0 = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 const openai = new OpenAI();
 
 async function personalizedSearch(userId: string, query: string, searchResults: string[]): Promise<string> {
@@ -627,7 +627,7 @@ sender_emails = get_emails_from_sender("alice", "bob@acme.com")
 ```typescript
 import MemoryClient from 'mem0ai';
 
-const client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
+const client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY!, host: process.env.MEM0_BASE_URL! });
 
 async function storeEmail(userId: string, sender: string, subject: string, body: string, date: string) {
     await client.add(

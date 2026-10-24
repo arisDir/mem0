@@ -16,7 +16,7 @@ metadata:
   category: ai-memory
   tags: "cli, terminal, memory, ai, command-line"
   mem0_tested_versions: "mem0-cli (PyPI) >=0.2.13,<0.3.0; @mem0/cli (npm) >=0.2.14,<0.3.0; mem0ai (PyPI) >=2.0.0,<3.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
-compatibility: Node.js 18+ (npm install -g @mem0/cli) or Python 3.10+ (pip install mem0-cli), MEM0_API_KEY env var
+compatibility: Node.js 18+ (npm install -g @mem0/cli) or Python 3.10+ (pip install mem0-cli), MEM0_API_KEY env var and MEM0_BASE_URL env var (must be provided and exported for Platform-client approach; base URL derived from MEM0_BASE_URL). If the agent detects both in the environment, it will utilize these values for the Platform-client approach.
 ---
 
 # Mem0 CLI
@@ -63,6 +63,7 @@ mem0 init
 **Or set the environment variable directly:**
 ```bash
 export MEM0_API_KEY="m0-xxx"
+export MEM0_BASE_URL="https://api.mem0.ai"  # Must be provided and exported for Platform-client approach; for self-hosted use your server URL. Base URL derived from MEM0_BASE_URL. If detected in env, agent uses for Platform-client approach.
 ```
 
 Get an API key at: https://app.mem0.ai/dashboard/api-keys?utm_source=oss&utm_medium=skill-mem0-cli
