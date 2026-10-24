@@ -4,11 +4,7 @@ description: Copy all seven Mem0 skills into the global OpenCode skills director
 
 # Install the Mem0 skills into OpenCode
 
-Follow these steps **in order** from the repository root. This is the local
-install from `OPENCODE-SKILLS.md` (sections 4–6), scoped to all seven skills:
-`mem0`, `mem0-cli`, `mem0-vercel-ai-sdk`, `mem0-integrate`,
-`mem0-test-integration`, `mem0-oss-to-platform`, `mem0-self-improvement`. No other
-skills are touched.
+Follow these steps **in order** from the repository root.
 
 Hard rules:
 
@@ -30,7 +26,7 @@ cd "$(git rev-parse --show-toplevel)"
 Define the list once and use it in every step below:
 
 ```bash
-SKILLS="mem0 mem0-cli mem0-vercel-ai-sdk mem0-integrate mem0-test-integration mem0-oss-to-platform mem0-self-improvement"
+SKILLS="mem0 mem0-self-improvement"
 ```
 
 Every source directory must exist with a root-level `SKILL.md`; stop and report
@@ -50,10 +46,8 @@ skills are available in every project. Point the copy at the parent directory
 that contains the skill folders — never at a single skill folder, or OpenCode
 derives the literal ID `SKILL`.
 
-The `mem0*` removal pattern is intentional and matches section 4 of
-`OPENCODE-SKILLS.md`: every `mem0*` skill is reinstalled below, so clearing the
-whole pattern just drops stale or retired copies while leaving non-Mem0 skills
-in place.
+The removal pattern is intentional, so just drops stale or retired copies while 
+leaving non-Mem0 skills in place.
 
 ```bash
 mkdir -p ~/.config/opencode/skills
@@ -98,9 +92,7 @@ ls -d "$HOME/.config/opencode/skills/"mem0* | sort
 
 Give the user a short summary:
 
-- **Installed:** all seven skills — `mem0`, `mem0-cli`, `mem0-vercel-ai-sdk`,
-  `mem0-integrate`, `mem0-test-integration`, `mem0-oss-to-platform`,
-  `mem0-self-improvement` — copied
+- **Installed:** all skills copied
   from `skills/` into `~/.config/opencode/skills/`.
 - **Verified:** all seven `SKILL.md` files exist at the expected paths and all
   declare a `description`.
@@ -108,6 +100,6 @@ Give the user a short summary:
   is re-read (if a running service caches config, run
   `opencode service restart`). Then confirm the IDs appear in the
   available-skills list, e.g. with `@mem0 explain how to add a memory`, or let
-  the model load one via the `skill` tool with `{"id": "mem0-cli"}`.
+  the model load one via the `skill` tool with `{"id": "mem0"}`.
 - **Refresh:** these are copies — after editing anything under `skills/`,
   re-run `/mem0-skill-setup` to pick up the changes.
