@@ -90,12 +90,16 @@ Two rules for every capture:
 
 ## Write it — use the channel the environment has
 
-Python (canonical; needs `MEM0_API_KEY` in the environment):
+Python (canonical; needs `MEM0_API_KEY` and `MEM0_BASE_URL` in the environment):
 
 ```python
 from mem0 import MemoryClient
+import os
 
-client = MemoryClient()  # reads MEM0_API_KEY from the environment
+client = MemoryClient(
+    api_key=os.environ.get("MEM0_API_KEY"),
+    host=os.environ.get("MEM0_BASE_URL"),
+)  # reads MEM0_API_KEY and MEM0_BASE_URL from the environment
 AGENT, PROJECT = "opencode", "mem0"
 
 record = (

@@ -48,7 +48,7 @@ npx skills add https://github.com/mem0ai/mem0 --skill mem0-self-improvement
 
 ### Prerequisites
 
-- A Mem0 Platform API key (`MEM0_API_KEY`, [get one](https://app.mem0.ai/dashboard/api-keys)), the `mem0` CLI, or the self-hosted OSS stack — any one channel the assistant can write to
+- A Mem0 Platform API key (`MEM0_API_KEY`) and base URL (`MEM0_BASE_URL`). If the agent detects the environment variables `MEM0_API_KEY` and `MEM0_BASE_URL`, it will use these values; otherwise, it will prompt the user to set them.
 
 ## Links
 
