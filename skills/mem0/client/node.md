@@ -1,6 +1,6 @@
 # Mem0 Node.js / TypeScript SDK Reference
 
-Complete reference for the `mem0ai` npm package. Covers the Platform client (managed API), the Open Source in-process `Memory` class, and the self-hosted OSS REST server.
+Complete reference for the `mem0ai` npm package. Covers both the Platform client (managed API) and the Open Source self-hosted variant.
 
 ---
 
@@ -27,7 +27,6 @@ const client = new MemoryClient({ apiKey: 'm0-xxx' });
 - HTTP library: native `fetch` (the axios instance in `mem0.ts` is unused)
 - Timeout: none set by the SDK
 - Base URL: `https://api.mem0.ai` (override with `host`)
-  - `host` targets **Platform-compatible** endpoints only. It keeps the Platform API shape (`Authorization: Token`, `/v1`/`/v3` paths), so it does **not** work against the OSS REST server in `server/` (`401`/`404`). For a self-hosted server use `X-API-Key` + unversioned paths ([../references/self-hosted-server.md](../references/self-hosted-server.md)).
 - All methods are async (return `Promise`)
 - Top-level option names are camelCase and responses come back camelCased (`event_id` becomes `eventId`). Keys inside `filters` are sent as written, so keep them snake_case (`user_id`).
 - `MEM0_SOURCE`, `MEM0_APPLICATION` and `MEM0_CLIENT_STACK` set the surface-identity headers for wrappers that cannot pass options.
@@ -344,28 +343,6 @@ const m = new Memory();  // Uses default config
 
 **Import:** `from 'mem0ai/oss'` (NOT the default export -- that is `MemoryClient` for Platform)
 
-### Self-hosted REST server (Docker)
-
-The `server/` directory runs the OSS server on `http://localhost:8888` (dashboard `:3000`) with an **unversioned** REST API authenticated by `X-API-Key: m0sk_...`. The Platform `MemoryClient` does **not** work against it.
-
-```typescript
-const BASE = "http://localhost:8888";
-const h = { "X-API-Key": "m0sk_...", "Content-Type": "application/json" };
-
-await (await fetch(`${BASE}/memories`, {
-  method: "POST", headers: h,
-  body: JSON.stringify({ messages: [{ role: "user", content: "I like hiking" }], user_id: "alice" }),
-})).json();
-// -> { results: [{ id, memory, event: "ADD" }] }   (synchronous)
-
-await (await fetch(`${BASE}/search`, {
-  method: "POST", headers: h,
-  body: JSON.stringify({ query: "hobbies", filters: { user_id: "alice" }, rerank: true }),
-})).json();
-```
-
-Full endpoint and auth reference: [../references/self-hosted-server.md](../references/self-hosted-server.md).
-
 ### Configuration
 
 ```typescript
@@ -402,7 +379,7 @@ const m = new Memory(config);
 const m2 = Memory.fromConfig(config);
 ```
 
-Defaults when omitted: LLM `openai` `gpt-5-mini`, embedder `openai` `text-embedding-3-small`, vector store `memory` (in-process), history `sqlite` at `memory.db`. `reranker` is also accepted (providers `cohere`, `zero_entropy`, `sentence_transformer`, `huggingface`, `llm_reranker`) and applies when `search` is called with `rerank: true`. There is no graph store in the TS OSS SDK, and no `ollama` reranker provider (that provider is Python-only).
+Defaults when omitted: LLM `openai` `gpt-5-mini`, embedder `openai` `text-embedding-3-small`, vector store `memory` (in-process), history `sqlite` at `memory.db`. `reranker` is also accepted (providers `cohere`, `zero_entropy`, `sentence_transformer`, `huggingface`, `llm_reranker`) and applies when `search` is called with `rerank: true`. There is no graph store in the TS OSS SDK.
 
 ### Methods
 
@@ -490,8 +467,6 @@ await m.reset();
 | **User listing** | `users()`, `deleteUsers()` | Not available |
 | **Profiles** | `getProfile`, `generateProfile`, profile settings | Not available |
 | **History** | Platform-managed | SQLite (configurable) |
-
-There is a **third** target: the self-hosted OSS REST server (`server/`). It is not an SDK client — call it over HTTP with `X-API-Key` and unversioned paths. See [../references/self-hosted-server.md](../references/self-hosted-server.md).
 
 ---
 

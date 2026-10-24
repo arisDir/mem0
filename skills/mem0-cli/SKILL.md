@@ -12,7 +12,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: mem0ai
-  version: "1.3.0"
+  version: "1.2.0"
   category: ai-memory
   tags: "cli, terminal, memory, ai, command-line"
   mem0_tested_versions: "mem0-cli (PyPI) >=0.2.13,<0.3.0; @mem0/cli (npm) >=0.2.14,<0.3.0; mem0ai (PyPI) >=2.0.0,<3.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
@@ -66,8 +66,6 @@ export MEM0_API_KEY="m0-xxx"
 ```
 
 Get an API key at: https://app.mem0.ai/dashboard/api-keys?utm_source=oss&utm_medium=skill-mem0-cli
-
-> **The self-hosted OSS server is not reachable from the CLI.** `mem0` targets the hosted Platform API (`/v1`/`/v3` paths, `Authorization: Token`) and validates the key by calling `/v1/ping/` at startup. The OSS REST server shipped in the repo's `server/` directory uses **unversioned** paths and `X-API-Key`, so pointing `platform.base_url` / `MEM0_BASE_URL` at it (e.g. `http://localhost:8888`) fails that ping. For a self-hosted server, call the REST API directly or use the OSS `Memory` class — see [mem0 → references/self-hosted-server.md](../mem0/references/self-hosted-server.md).
 
 ## Quick Reference
 

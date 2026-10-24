@@ -314,8 +314,6 @@ const memories = await retrieveMemories(prompt, {
 });
 ```
 
-`host` must point at a **Platform-compatible** endpoint — the provider calls the Platform API (`/v3/memories/add/` and `/v3/memories/search/` with `Authorization: Token`). The OSS REST server from the repo's `server/` directory uses unversioned paths and `X-API-Key`, so it does not work here. See [mem0 → references/self-hosted-server.md](../../mem0/references/self-hosted-server.md).
-
 ### Memory filtering and ranking
 
 ```typescript

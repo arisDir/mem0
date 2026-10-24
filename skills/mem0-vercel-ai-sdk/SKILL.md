@@ -12,7 +12,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: mem0ai
-  version: "2.1.0"
+  version: "2.0.0"
   category: ai-memory
   tags: "vercel, ai-sdk, memory, nextjs, typescript, provider"
   mem0_tested_versions: "@mem0/vercel-ai-provider (npm) >=3.0.0,<4.0.0; ai (npm) >=6.0.0,<7.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
@@ -192,7 +192,7 @@ User controls each step:
 - **`"google"` and `"gemini"`** are both accepted and map to `@ai-sdk/google`.
 - **Removed in 3.0.0**: `org_id`, `project_id`, `org_name`, `project_name`, `output_format`, `filter_memories`, `async_mode`, `enable_graph`, `version`, `api_version`. Graph memory is now a Mem0 Platform project setting, not a provider option.
 - **Default `top_k` is 10.** `threshold` and `rerank` are only sent when set (the API default for `rerank` is `false`; `threshold` is a server-side cutoff, not a floor on the returned score).
-- **Custom host**: set `host` in the config to point to a different **Platform-compatible** Mem0 API endpoint (default: `https://api.mem0.ai`). It keeps the Platform API shape (`Authorization: Token`, `/v1`/`/v3` paths), so it does **not** work against the OSS REST server in `server/` (unversioned paths + `X-API-Key`). See [mem0 → references/self-hosted-server.md](../mem0/references/self-hosted-server.md).
+- **Custom host**: set `host` in the config to point to a different Mem0 API endpoint (default: `https://api.mem0.ai`).
 
 ## References
 

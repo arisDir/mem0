@@ -18,7 +18,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: mem0ai
-  version: "0.2.0"
+  version: "0.1.1"
   category: ai-memory
   tags: "memory, integration, testing, tdd, platform, oss"
   coupling: loose
@@ -38,8 +38,6 @@ All static checks and smoke-test shapes validate against these URLs.
 
 - Scope-tagged docs index: https://docs.mem0.ai/llms.txt
 - OpenAPI (Platform REST): https://docs.mem0.ai/openapi.json
-- Self-hosted OSS server reference (unversioned REST API, `X-API-Key`):
-  `skills/mem0` → `references/self-hosted-server.md`
 - Published SDK skill (canonical call patterns): https://raw.githubusercontent.com/mem0ai/mem0/main/skills/mem0/SKILL.md
 - Vercel AI SDK skill (if the target repo uses `@ai-sdk/*`): https://raw.githubusercontent.com/mem0ai/mem0/main/skills/mem0-vercel-ai-sdk/SKILL.md
 - SDK source (cross-check version against frontmatter `mem0_tested_versions`):
@@ -78,9 +76,8 @@ Refuse to start unless ALL of the following are true:
   skill). Prevents accidental runs on unrelated branches.
 - Working tree is clean. The skill never modifies source files; any dirty
   state means the integration is mid-edit and not ready to verify.
-- The same credential the integration used is available in the environment
-  (`MEM0_API_KEY` for Platform, `OPENAI_API_KEY` for OSS, or the OSS server's
-  base URL plus an `X-API-Key` `m0sk_...` key — read which from
+- The same API key the integration used is available in the environment
+  (`MEM0_API_KEY` for Platform, `OPENAI_API_KEY` for OSS — read which from
   `product.json`). Interactive mode asks if missing; CI mode exits 2.
 
 Exit with a written rationale on any precondition failure. Never attempt
@@ -92,8 +89,8 @@ to "fix up" state.
 
 Load:
 
-- `product.json` → which language, which product (Platform / OSS /
-  OSS server), which mem0 version, `write_site`, `read_site`.
+- `product.json` → which language, which product (Platform vs OSS), which
+  mem0 version, `write_site`, `read_site`.
 - `plan.md` → the mechanical contract (write pattern, read pattern,
   preserved behavior).
 - `goal.md` → the intent (displayed in the scorecard only; not tested).
@@ -119,9 +116,6 @@ if dependencies don't resolve.
   - Platform TS → `import MemoryClient from "mem0ai"`
   - OSS Python → `from mem0 import Memory`
   - OSS TS → `import { Memory } from "mem0ai/oss"`
-  - OSS server → **no SDK import**; the sites call the REST API with an
-    `X-API-Key` header (`requests` / `httpx` / `fetch`). Grep for the header
-    or the base URL instead of a `mem0` import.
 
   If `plan.md` names a delegated skill (e.g., Vercel AI), use *that*
   skill's import signature instead of the list above. Mismatch → fail
@@ -142,8 +136,6 @@ if dependencies don't resolve.
   instantiation hits the wire on import and breaks Pass A's test
   collection whenever the key is unset. Hit → fail with `file:line` and
   the lazy-init guidance from `/mem0-integrate` step 8 constraint #7.
-  For **OSS server** there is no SDK constructor to hoist — the client is a
-  plain HTTP call — so this check is skipped.
 
 ### 4. Run the repo's native test suite (two passes)
 
@@ -211,27 +203,6 @@ with the configured vector store service, the skill starts it first and tears
 it down after. If the configured backing store is not reachable → fail with a
 clear message naming the fix.
 
-**OSS server (Python / TS):** calls the unversioned REST API directly with an
-`X-API-Key` header — no SDK import. Unlike Platform, `add` is **synchronous**,
-so the result is searchable immediately and no retry loop is needed:
-
-    import os, requests
-    base, key = os.environ["MEM0_API_URL"].rstrip("/"), os.environ["MEM0_API_KEY"]
-    h = {"X-API-Key": key, "Content-Type": "application/json"}
-    uid = f"mem0-test-integration-{os.urandom(4).hex()}"
-    r = requests.post(f"{base}/memories", headers=h, json={
-        "messages": [{"role": "user", "content": "I prefer aisle seats"}],
-        "user_id": uid}).json()
-    hits = requests.post(f"{base}/search", headers=h, json={
-        "query": "seat preference", "filters": {"user_id": uid}}).json()["results"]
-    assert any("aisle" in x.get("memory", "") for x in hits), hits
-    for m in hits:                                   # per-memory delete needs no admin key
-        requests.delete(f"{base}/memories/{m['id']}", headers=h)
-
-`MemoryClient(host=...)` does **not** work against this server (it sends
-`Authorization: Token` to `/v1`|`/v3` and gets `401`/`404`) — see
-`skills/mem0` → `references/self-hosted-server.md`.
-
 The smoke test always uses a **disposable random user_id** prefixed with
 `mem0-test-integration-` so a failed cleanup doesn't pollute the user's
 real data. A background tidy step lists Platform entities with `client.users()`,
@@ -286,9 +257,7 @@ Execution order:
 9. Evaluate `read_assert` against `read_call`'s stdout. Miss → fail.
 10. Cleanup (always, even on failure): SIGTERM the app, SIGKILL after
     5s, `docker compose down` if services were started, `delete_all` for
-    the disposable `MEM0_USER_ID` on Platform scenarios, and for OSS server
-    scenarios delete the disposable memories via
-    `DELETE /memories/{id}` (unversioned, `X-API-Key`).
+    the disposable `MEM0_USER_ID` on Platform scenarios.
 
 On any failure, the scorecard includes:
 

@@ -12,7 +12,7 @@ Migrate a project from the Mem0 Open Source (self-hosted) SDK to the Mem0 Platfo
 
 When invoked, your assistant will:
 
-- **Discover** every place Mem0 is used in the project — imports, client init, config blocks, call sites, dependencies, env, and local infra (including the self-hosted OSS **server** reached over REST with `X-API-Key`, whose data lives in Postgres/`pgvector`)
+- **Discover** every place Mem0 is used in the project — imports, client init, config blocks, call sites, dependencies, env, and local infra
 - **Verify** the exact API against the installed SDK rather than guessing
 - **Map** each OSS `Memory` usage to its hosted `MemoryClient` equivalent (Python and TypeScript)
 - **Flag** everything that isn't a clean 1:1 and needs a human decision

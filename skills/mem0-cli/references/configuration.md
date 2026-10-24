@@ -57,7 +57,7 @@ Saving an API key also updates an existing `env.MEM0_API_KEY` entry in `~/.claud
 | `defaults.app_id` | string | `""` | Default app ID for scoping commands. |
 | `defaults.run_id` | string | `""` | Default run ID for scoping commands. |
 | `platform.api_key` | string | `""` | API key for the Mem0 Platform. |
-| `platform.base_url` | string | `"https://api.mem0.ai"` | Base URL for API requests. Must speak the Platform API (`/v1`/`/v3`); not the OSS server in `server/`. |
+| `platform.base_url` | string | `"https://api.mem0.ai"` | Base URL for API requests. |
 | `platform.user_email` | string | `""` | Email used for login or claim. Also cached from the ping response during `init`. |
 | `platform.agent_mode` | boolean | `false` | `true` while the key is an unclaimed Agent Mode key. |
 | `platform.created_via` | string | `""` | How the key was obtained: `agent_mode`, `email`, `api_key`, or `existing_key`. |
@@ -66,8 +66,6 @@ Saving an API key also updates an existing `env.MEM0_API_KEY` entry in `~/.claud
 | `platform.default_user_id` | string | `""` | `user_<slug>` returned by the Agent Mode bootstrap. Printed by `mem0 whoami`. |
 | `telemetry.anonymous_id` | string | `""` | Persistent anonymous ID used for telemetry. |
 | `agent_rush.acknowledged_at` | string | `""` | ISO timestamp when the `agent-rush` public-memory warning was acknowledged. |
-
-> **`platform.base_url` must serve the Platform API.** The CLI speaks the hosted Platform contract (`/v1`/`/v3` paths, `Authorization: Token`, `/v1/ping/` key validation). Point it at the default, a Platform-compatible gateway, or a self-hosted *Platform* deployment — **not** the OSS REST server from `server/`, which uses unversioned paths and `X-API-Key` and fails the startup ping. See [mem0 → references/self-hosted-server.md](../../mem0/references/self-hosted-server.md).
 
 ---
 

@@ -3,8 +3,7 @@ name: mem0-integrate
 description: >
   Integrate Mem0 into an existing repository using a goal-driven, TDD pipeline.
   Detects the repo's language automatically and asks the user to pick between
-  Mem0 Platform (managed), Mem0 Open Source (in-process), and the self-hosted
-  OSS REST server. Writes failing
+  Mem0 Platform (managed) and Mem0 Open Source (self-hosted). Writes failing
   tests before any implementation. Produces a local feature branch plus
   `.mem0-integration/` artifacts consumed by the paired verification skill.
   TRIGGER when: user says "integrate mem0", "add mem0 to this repo", "wire
@@ -16,7 +15,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: mem0ai
-  version: "0.2.0"
+  version: "0.1.1"
   category: ai-memory
   tags: "memory, integration, tdd, platform, oss"
   mem0_tested_versions: "mem0ai (PyPI) >=2.0.0,<3.0.0; mem0ai (npm) >=3.0.0,<4.0.0"
@@ -112,7 +111,6 @@ the target stack. If yes, delegate — copy its call-site pattern into
 | CLI-only repo (Typer, Commander, Click, Cobra) with no LLM call sites | `skills/mem0-cli` | Call sites are command handlers, not model wrappers. Consider whether mem0 actually fits first. |
 | Target is an MCP client / editor config (Claude Code, Cursor, Codex settings) | `integrations/mem0-agent-plugin` | Local stdio MCP server (one search tool) plus skills, no hooks or automatic capture; for a hosted endpoint use `https://mcp.mem0.ai/mcp`. No SDK code usually needed. |
 | Any other Python or TS repo with an LLM call site | `skills/mem0` | Default SDK integration path. |
-| Repo runs the Mem0 OSS REST server (`server/`, or code calling `/memories` with `X-API-Key`) | `skills/mem0` → [references/self-hosted-server.md](../mem0/references/self-hosted-server.md) | Integrate against the unversioned REST API (`X-API-Key`), **not** `MemoryClient`. |
 
 Record the delegated skill's raw URL in `plan.md` under a
 **"Delegated skill:"** field. The test writer in step 7 and the
@@ -151,8 +149,8 @@ start executing a step; the summary below is only for routing.
 |---|---|---|
 | 1 | **Language detection.** `package.json` / `pyproject.toml` / `requirements.txt`. Monorepo, ask which subdirectory. | |
 | 2 | **Repo comprehension.** Budgeted read of README, contributor docs, entry points, top two directory levels. Produces `repo-summary.md` with ranked backend surfaces. | User confirms the summary and picks a surface. No backend surface, exit 1. |
-| 3 | **Product selection.** Platform vs OSS (in-process) vs self-hosted OSS server, recommended from dependency signals, never asked blank. | Locked into `goal.md`, never re-decided. |
-| 4 | **API key check.** `MEM0_API_KEY` (Platform), `OPENAI_API_KEY` (OSS), or an `X-API-Key` `m0sk_...` + base URL (OSS server). Missing on Platform, default to Agent Mode via `mem0 init --agent`. | CI mode with a missing key, exit 2. |
+| 3 | **Product selection.** Platform vs OSS, recommended from dependency signals, never asked blank. | Locked into `goal.md`, never re-decided. |
+| 4 | **API key check.** `MEM0_API_KEY` (Platform) or `OPENAI_API_KEY` (OSS). Missing on Platform, default to Agent Mode via `mem0 init --agent`. | CI mode with a missing key, exit 2. |
 | 5 | **Goal doc.** `goal.md`: what gets stored, when it is retrieved, why, product, delegated skill, out of scope. | **Hard gate.** Explicit approval required. 3 rejections, exit 3. |
 | 6 | **Integration plan.** Scoped grep for call sites and identity source. `plan.md`: write/read patterns, scoping, call sites, dependencies, preserved behavior, coexistence, feature flag, sources, E2E recipe. | **Hard gate.** No plausible additive call site or 3 rejections, exit 5. |
 | 7 | **Tests first.** Failing write and read tests in the repo's native framework, assertion shapes lifted from the canonical signatures. Must be importable with `MEM0_API_KEY` unset. | Tests must fail. If they pass, they are wrong. |
@@ -170,7 +168,7 @@ start executing a step; the summary below is only for routing.
 | `trace.jsonl` | Every tool call, decision, and subagent exchange this run. | Overwritten per run. |
 | `diff.patch` | The committed integration as a reviewable patch. | Overwritten per run. |
 | `heal-trace.md` | Per-attempt record of the self-healing loop (step 10). | Overwritten per run. |
-| `product.json` | `{"product": "platform"\|"oss"\|"oss-server", "language": "...", "mem0_version": "...", "write_site": "file:line", "read_site": "file:line", "feature_flag": "MEM0_ENABLED", "preferred_site": "<surface index from step 2>"}`, consumed by the verification skill. | Overwritten per run. |
+| `product.json` | `{"product": "platform"\|"oss", "language": "...", "mem0_version": "...", "write_site": "file:line", "read_site": "file:line", "feature_flag": "MEM0_ENABLED", "preferred_site": "<surface index from step 2>"}`, consumed by the verification skill. | Overwritten per run. |
 
 `.mem0-integration/` is added to `.gitignore` on first run. Nothing is
 written outside this directory and the repo's source tree.
@@ -189,7 +187,6 @@ written outside this directory and the repo's source tree.
     /mem0-integrate --heal-max 5               # cap heal attempts per category (default 3)
     /mem0-integrate --product platform         # skip the product ask
     /mem0-integrate --product oss
-    /mem0-integrate --product oss-server         # self-hosted OSS REST server
     /mem0-integrate --ci                       # non-interactive (for test harness)
 
 ## Exit codes
