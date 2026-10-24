@@ -1,60 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    "./AGENTS.md"
-  ],
-  "skills": [
-    ".openwork/skills"
-  ],
-    "permission": {
-    "read": {
-      "*": "deny",
-      "~/projects/mem0/*": "allow"
-    },
-    "edit":  {
-      "*": "deny",
-      "~/projects/mem0/*": "allow"
-    },
-    "glob": "allow",
-    "grep": "allow",
-    "bash": {
-      "*": "ask",
-      "docker *": "allow",
-      "docker compose *": "allow",
-      "docker ps *": "allow",
-      "docker exec *": "allow",
-      "curl *": "allow",
-      "make *": "allow",
-      "ollama *": "allow",
-      "openssl *": "allow",
-      "python3 *": "allow",
-      "sed *": "allow",
-      "ss *": "allow",
-      "lsof *": "allow",
-      "install *": "allow",
-      "chmod *": "allow",
-      "mkdir *": "allow",
-      "date *": "allow",
-      "printf *": "allow",
-      "git rev-parse *": "allow",
-      "dig *": "allow",
-      "git diff *": "allow",
-      "git log *": "allow",
-      "git status *": "allow",
-      "grep *": "allow",
-      "ls *": "allow",
-      "pwd": "allow",
-      "whoami": "allow"
-    },
-    "task": "allow",
-    "skill": "allow",
-    "webfetch": "allow",
-    "websearch": "allow",
-    "question": "allow",
-    "lsp": "allow",
-    "todowrite": "allow"
-  },
-  "plugin": [
-    "superpowers@git+https://github.com/obra/superpowers.git"
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "*",
+      "effect": "deny"
+    }
   ]
 }
